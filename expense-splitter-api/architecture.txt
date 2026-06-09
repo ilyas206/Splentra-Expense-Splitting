@@ -1,0 +1,39 @@
+todos : 
+- adding currency for expense amount
+
+users
+  id, name, email, password
+
+groups
+  id, title, created_by (FK → users)
+
+group_user
+  user_id (FK), group_id (FK)
+
+expenses
+  id, group_id (FK), user_id (FK = payer),
+  amount, category, description, created_at
+
+expense_splits
+  id, expense_id (FK), user_id (FK),
+  share_amount, is_paid
+
+Endpoints :
+
+POST   /register
+POST   /login
+POST   /logout
+
+POST   /groups
+GET    /groups
+GET    /groups/{group}
+PUT    /groups/{group}
+DELETE /groups/{group}
+POST   /groups/{group}/members
+
+POST   /expenses
+GET    /groups/{group}/expenses
+PUT    /expenses/{expense}
+DELETE /expenses/{expense}
+
+PUT    /expense_splits/{split}
