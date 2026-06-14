@@ -1,4 +1,4 @@
-import { CircleDollarSign, Pen, Plus, Trash, Trash2Icon } from "lucide-react";
+import { CircleDollarSign, Pen, Plus, Trash, Trash2Icon, X } from "lucide-react";
 import Navbar from "../navbar/Navbar";
 import { useEffect, useRef, useState } from "react";
 import { axiosClient } from "../../../api/axios";
@@ -134,13 +134,12 @@ export default function Dashboard(){
                 {
                     isLoading ? 
                     (
-                        <div className="flex-1 flex items-center justify-center">
+                        <div className="flex-1 flex items-center justify-center text-(--light)">
                             <CircleDollarSign size={70} className='animate-spin'/>
                         </div>
                     ) : 
                     (
                         <>
-                            <h1 className="text-5xl font-black mb-15">Welcome {user?.name}</h1>
                             <hr className="text-(--input-border) mb-5" />
                             <div className="flex items-center justify-between">
                                 <h1 className="text-4xl font-bold">My Groups</h1>
@@ -167,7 +166,7 @@ export default function Dashboard(){
                                                 <div className="flex-1">
                                                     <input type="text" ref={createTitle} required className={`w-full border focus:ring-1 ${error?.message ? 'border-(--danger) focus:ring-(--danger)' : 'border-(--input-border) focus:ring-(--medium)'} rounded-md p-2 outline-none placeholder:text-sm transition-all duration-300`} placeholder="Title..." />
                                                 </div>
-                                                <button type="submit" className="flex items-center justify-center w-1/10 p-1 border border-(--input-border) rounded-md cursor-pointer transition-all duration-300 text-(--light) hover:bg-(--light) hover:text-(--darkest) hover:tracking-widest">
+                                                <button type="submit" className="flex items-center justify-center w-1/10 p-1 border border-(--input-border) rounded-md cursor-pointer transition-all duration-300 text-(--light) hover:bg-(--light) hover:border-(--light) hover:text-(--darkest) hover:tracking-widest">
                                                     {
                                                         isActionLoading ? <CircleDollarSign size={20} className='animate-spin'/> : <span>Create</span>
                                                     }
@@ -190,7 +189,7 @@ export default function Dashboard(){
                                                 <div className="flex-1">
                                                     <input type="text" value={editedGroupTitle} onChange={(e) => setEditedGroupTitle(e.target.value)} required className={`w-full border focus:ring-1 ${error?.message ? 'border-(--danger) focus:ring-(--danger)' : 'border-(--input-border) focus:ring-(--medium)'} rounded-md p-2 outline-none placeholder:text-sm transition-all duration-300`} placeholder="Title..." />
                                                 </div>
-                                                <button type="submit" className="flex items-center justify-center w-1/10 p-1 border border-(--input-border) rounded-md cursor-pointer transition-all duration-300 text-(--light) hover:bg-(--light) hover:text-(--darkest) hover:tracking-widest">
+                                                <button type="submit" className="flex items-center justify-center w-1/10 p-1 border border-(--input-border) rounded-md cursor-pointer transition-all duration-300 text-(--light) hover:bg-(--light) hover:border-(--light) hover:text-(--darkest) hover:tracking-widest">
                                                     {
                                                         isActionLoading ? <CircleDollarSign size={20} className='animate-spin'/> : <span>Edit</span>
                                                     }
@@ -202,117 +201,123 @@ export default function Dashboard(){
                                 }
                             </>
 
-                            <div className="grid grid-cols-3 gap-4 mt-7">
-                                {
-                                    groups?.map(group => {
-                                        const isCreator = user?.id === group.created_by
-                                        return <div key={group.id} className="bg-(--dark) shadow-2xl rounded-md p-3 flex flex-col items-center justify-center">
+                            {
+                                groups.length > 0 ? 
+                                    <div className="grid grid-cols-3 gap-4 mt-7">
+                                        {
+                                        groups.map(group => {
+                                            const isCreator = user?.id === group.created_by
+                                            return <div key={group.id} className="bg-(--dark) shadow-2xl rounded-md p-3 flex flex-col items-center justify-center">
 
-                                            <div className="flex items-center justify-center gap-2">
+                                                <div className="flex items-center justify-center gap-2">
 
-                                                <Tooltip>
-                                                    <TooltipTrigger>
-                                                        <Link to={`/groups/${group.id}`}>
-                                                            <h1 className="text-2xl font-semibold">{group.title}</h1>
-                                                        </Link>
-                                                    </TooltipTrigger>
-                                                    <TooltipContent>
-                                                        <span>View Group Details</span>
-                                                    </TooltipContent>
-                                                </Tooltip>
-
-                                                {
-                                                    isCreator &&
                                                     <Tooltip>
                                                         <TooltipTrigger>
-                                                            <div>
-                                                                <span className="py-1 px-2 font-bold bg-(--darkest) text-(--light) rounded-lg">Creator</span>
-                                                            </div>
+                                                            <Link to={`/groups/${group.id}`}>
+                                                                <h1 className="text-2xl font-semibold">{group.title}</h1>
+                                                            </Link>
                                                         </TooltipTrigger>
                                                         <TooltipContent>
-                                                            <span>You are the Creator and the First Member of this Group</span>
+                                                            <span>View Group Details</span>
                                                         </TooltipContent>
                                                     </Tooltip>
-                                                }
-                                            </div>
-                                            
-                                            <div className="flex items-center justify-center gap-2 my-3">
-                                                
-                                                {
-                                                    isCreator ? 
-                                                    <>
-                                                        <button disabled={!isCreator} 
-                                                            onClick={() => {
-                                                                setEditedGroupTitle(group.title)
-                                                                setEditedGroupID(group.id)
-                                                                setToggleCreateForm(false)
-                                                                setError(null)
-                                                            }} 
-                                                            className="flex items-center gap-2 text-(--light) hover:bg-(--light) hover:text-(--darkest) disabled:hover:bg-(--dark) disabled:text-gray-400/80 p-2 rounded-md transition-all duration-300 cursor-pointer disabled:cursor-not-allowed">
-                                                            Edit
-                                                            <Pen size={15} />
-                                                        </button>
-                                                        <AlertDialog>
-                                                            <AlertDialogTrigger asChild>
-                                                                <button className="flex items-center gap-2 text-(--light) hover:bg-(--danger) p-2 rounded-md transition-all duration-300 cursor-pointer">
-                                                                    Delete
-                                                                    <Trash size={15} />
-                                                                </button>
-                                                            </AlertDialogTrigger>
-                                                            <AlertDialogContent size="sm" className="bg-(--darker) text-(--light)">
-                                                                <AlertDialogHeader>
-                                                                    <AlertDialogMedia className="bg-destructive/10 text-destructive/90 dark:bg-destructive/20 dark:text-destructive">
-                                                                        <Trash2Icon />
-                                                                    </AlertDialogMedia>
-                                                                    <AlertDialogTitle>Delete <b>"{group.title}"</b> Group ?</AlertDialogTitle>
-                                                                        <AlertDialogDescription className="text-(--light)">
-                                                                            This will permanently delete this group as well as its related expenses AND also their expense splits.
-                                                                        </AlertDialogDescription>
-                                                                    </AlertDialogHeader>
-                                                                    <AlertDialogAction onClick={() => handleDelete(group.id)} variant="destructive">
-                                                                        {
-                                                                            isActionLoading ? <CircleDollarSign size={20} className='animate-spin'/> : <span>Delete</span>
-                                                                        }
-                                                                    </AlertDialogAction>
-                                                                    <AlertDialogCancel className="text-(--light) hover:bg-(--dark) transition-all duration-300" variant="outlined">Cancel</AlertDialogCancel>
-                                                            </AlertDialogContent>
-                                                        </AlertDialog>
-                                                    </> : 
-                                                    <>
-                                                        <Tooltip>
-                                                            <TooltipTrigger>
-                                                                <span 
-                                                                    className="flex items-center gap-2 text-gray-400/80 p-2 cursor-not-allowed">
-                                                                    Edit
-                                                                    <Pen size={15} />
-                                                                </span>
-                                                            </TooltipTrigger>
-                                                            <TooltipContent>
-                                                                <span>Only the Creator CAN Edit this Group</span>
-                                                            </TooltipContent>
-                                                        </Tooltip>
-                                                        <Tooltip>
-                                                            <TooltipTrigger>
-                                                                <span 
-                                                                    className="flex items-center gap-2 text-gray-400/80 p-2 cursor-not-allowed">
-                                                                    Delete
-                                                                    <Trash size={15} />
-                                                                </span>
-                                                            </TooltipTrigger>
-                                                            <TooltipContent>
-                                                                <span>Only the Creator CAN Delete this Group</span>
-                                                            </TooltipContent>
-                                                        </Tooltip>
-                                                    </>
-                                                }
-                                                
-                                            </div>
 
-                                            <p className="font-thin text-sm text-center">Edited <b>{group.formatted_updated_at}</b></p>
-                                        </div>
-                                    })
-                                }
-                            </div>
+                                                    {
+                                                        isCreator &&
+                                                        <Tooltip>
+                                                            <TooltipTrigger>
+                                                                <div>
+                                                                    <span className="py-1 px-2 font-bold bg-(--darkest) text-(--light) rounded-lg">Creator</span>
+                                                                </div>
+                                                            </TooltipTrigger>
+                                                            <TooltipContent>
+                                                                <span>You are the Creator and the First Member of this Group</span>
+                                                            </TooltipContent>
+                                                        </Tooltip>
+                                                    }
+                                                </div>
+                                                
+                                                <div className="flex items-center justify-center gap-2 my-3">
+                                                    
+                                                    {
+                                                        isCreator ? 
+                                                        <>
+                                                            <button disabled={!isCreator} 
+                                                                onClick={() => {
+                                                                    setEditedGroupTitle(group.title)
+                                                                    setEditedGroupID(group.id)
+                                                                    setToggleCreateForm(false)
+                                                                    setError(null)
+                                                                }} 
+                                                                className="flex items-center gap-2 text-(--light) hover:bg-(--light) hover:text-(--darkest) disabled:hover:bg-(--dark) disabled:text-gray-400/80 p-2 rounded-md transition-all duration-300 cursor-pointer disabled:cursor-not-allowed">
+                                                                Edit
+                                                                <Pen size={15} />
+                                                            </button>
+                                                            <AlertDialog>
+                                                                <AlertDialogTrigger asChild>
+                                                                    <button className="flex items-center gap-2 text-(--light) hover:bg-(--danger) p-2 rounded-md transition-all duration-300 cursor-pointer">
+                                                                        Delete
+                                                                        <Trash size={15} />
+                                                                    </button>
+                                                                </AlertDialogTrigger>
+                                                                <AlertDialogContent size="sm" className="bg-(--darker) text-(--light)">
+                                                                    <AlertDialogHeader>
+                                                                        <AlertDialogMedia className="bg-destructive/10 text-destructive/90 dark:bg-destructive/20 dark:text-destructive">
+                                                                            <Trash2Icon />
+                                                                        </AlertDialogMedia>
+                                                                        <AlertDialogTitle>Delete <b>"{group.title}"</b> Group ?</AlertDialogTitle>
+                                                                            <AlertDialogDescription className="text-(--light)">
+                                                                                This will permanently delete this group as well as its related expenses AND also their expense splits.
+                                                                            </AlertDialogDescription>
+                                                                        </AlertDialogHeader>
+                                                                        <AlertDialogAction onClick={() => handleDelete(group.id)} variant="destructive">
+                                                                            {
+                                                                                isActionLoading ? <CircleDollarSign size={20} className='animate-spin'/> : <span>Delete</span>
+                                                                            }
+                                                                        </AlertDialogAction>
+                                                                        <AlertDialogCancel className="text-(--light) hover:bg-(--dark) transition-all duration-300" variant="outlined">Cancel</AlertDialogCancel>
+                                                                </AlertDialogContent>
+                                                            </AlertDialog>
+                                                        </> : 
+                                                        <>
+                                                            <Tooltip>
+                                                                <TooltipTrigger>
+                                                                    <span 
+                                                                        className="flex items-center gap-2 text-gray-400/80 p-2 cursor-not-allowed">
+                                                                        Edit
+                                                                        <Pen size={15} />
+                                                                    </span>
+                                                                </TooltipTrigger>
+                                                                <TooltipContent>
+                                                                    <span>Only the Creator CAN Edit this Group</span>
+                                                                </TooltipContent>
+                                                            </Tooltip>
+                                                            <Tooltip>
+                                                                <TooltipTrigger>
+                                                                    <span 
+                                                                        className="flex items-center gap-2 text-gray-400/80 p-2 cursor-not-allowed">
+                                                                        Delete
+                                                                        <Trash size={15} />
+                                                                    </span>
+                                                                </TooltipTrigger>
+                                                                <TooltipContent>
+                                                                    <span>Only the Creator CAN Delete this Group</span>
+                                                                </TooltipContent>
+                                                            </Tooltip>
+                                                        </>
+                                                    }
+                                                    
+                                                </div>
+
+                                                <p className="font-thin text-sm text-center">Edited <b>{group.formatted_updated_at}</b></p>
+                                            </div>
+                                        })
+                                    }
+                                </div> : <div className="flex items-center justify-center gap-3 min-h-96">
+                                        <X size={30} />
+                                        <h2 className="text-2xl font-bold">You are NOT a member in any Group so far</h2>
+                                    </div>
+                            }
                             <Toaster/>
                         </>
                     )

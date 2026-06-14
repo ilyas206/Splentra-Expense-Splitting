@@ -15,6 +15,7 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::post('/logout', [AuthController::class, 'logout']);
 
     Route::get('/users', [UserController::class, 'index']);
+    Route::get('/users/search', [UserController::class, 'search']);
 
     Route::get('/groups', [GroupController::class, 'index']);
     Route::get('/groups/{group}', [GroupController::class, 'show']);
@@ -27,9 +28,10 @@ Route::middleware('auth:sanctum')->group(function(){
 
     Route::post('/groups/{group}/expenses', [ExpenseController::class, 'store']);
     Route::get('/groups/{group}/expenses', [ExpenseController::class, 'index']);
-    Route::get('/expenses/{expense}/splits', [ExpenseController::class, 'getExpenseSplits']);
+    Route::get('/expenses/{expense}', [ExpenseController::class, 'show']);
     Route::put('/expenses/{expense}', [ExpenseController::class, 'update']);
     Route::delete('/expenses/{expense}', [ExpenseController::class, 'destroy']);
-
-    Route::put('/expense_splits/{split}', [ExpenseSplitController::class, 'update']);
+    
+    Route::get('/expenses/{expense}/splits', [ExpenseSplitController::class, 'index']);
+    Route::put('/expense_splits/{expenseSplit}', [ExpenseSplitController::class, 'update']);
 });

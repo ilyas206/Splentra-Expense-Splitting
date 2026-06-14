@@ -25,8 +25,20 @@ class ExpenseController extends Controller
         return $response;
     }
 
-    public function getExpenseSplits(Expense $expense){
-        return $expense->expenseSplits;
+    public function show(Request $request, Expense $expense){
+        $belongs = $request->user()->groups->contains($expense->group_id);
+
+        if(!$belongs){
+            return response()->json([
+                'message' => "This expense group doesn't belong to the authenticated user"
+            ], 403);
+        }
+
+        $expense->load(['user', 'group']);
+
+        return response()->json([
+            'expense' => new ExpenseResource($expense)
+        ]);
     }
 
     public function store(Request $request, Group $group){
@@ -118,8 +130,15 @@ class ExpenseController extends Controller
 
         $expense->update($formFields);
 
+        // Store ids of users who already paid their splits before deleting splits
+        $alreadyPaidUserIds = $expense->expenseSplits()
+        ->where('is_paid', true)
+        ->pluck('user_id')
+        ->toArray();
+
         // Delete the expense splits records before recreating them
         $expense->expenseSplits()->delete();
+
         $share_amount = $amount / count($member_ids);
 
         foreach($member_ids as $member_id){
@@ -127,7 +146,8 @@ class ExpenseController extends Controller
                 'expense_id' => $expense->id,
                 'user_id' => $member_id,
                 'share_amount' => $share_amount,
-                'is_paid' => $member_id === $expense->payer_id
+                // is_paid true for the payer and every member has already paid his split 
+                'is_paid' => in_array($member_id, $alreadyPaidUserIds) || $member_id === $expense->payer_id
             ]);
         }
 
