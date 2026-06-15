@@ -28,11 +28,11 @@ export default function Register(){
 
     return(
         <div className="flex items-center justify-around min-h-screen">
-            <div>
+            <div className="hidden md:block">
                 <img src={SplentraSlogan} alt="Splentra" className="w-140" />
             </div>
-            <div className="border border-(--border-color) shadow-2xl rounded-md w-2/5 p-7 text-(--light) bg-(--dark)">
-                <h1 className="text-center text-4xl font-bold mb-7">Let's get started !</h1>
+            <div className="border border-(--border-color) shadow-2xl rounded-md w-full mx-6 md:mx-0 md:w-2/5 p-7 text-(--light) bg-(--dark)">
+                <h1 className="text-center text-2xl md:text-4xl font-bold mb-4 md:mb-7">Let's get started !</h1>
                 <p className="text-center font-thin">Please enter your informations</p>
                 <h4 className="text-center text-(--danger) font-bold my-3">{errors?.message}</h4>
                 <form onSubmit={handleSubmit}>
@@ -55,7 +55,6 @@ export default function Register(){
                         <p className="text-(--danger) font-bold text-sm mt-1">{errors?.errors?.password?.[0]}</p>
                     </div>
 
-                    {/* <input type="submit" value="Register" className="bg-(--light) text-(--darkest) w-full p-1 mt-7 rounded-md cursor-pointer hover:bg-white transition-all duration-300 hover:tracking-widest"/> */}
                     <button type="submit" className="flex items-center justify-center gap-2 bg-(--light) text-(--darkest) w-full p-1 mt-7 rounded-md cursor-pointer hover:bg-white transition-all duration-300 hover:tracking-widest">
                         Register
                         {
@@ -63,7 +62,7 @@ export default function Register(){
                         }
                     </button>
                 </form>
-                <div className="text-center my-3 hover:underline">
+                <div className="text-center text-sm md:text-md my-3 hover:underline">
                     <Link to='/login'>Already have an account ? Login</Link>
                 </div>
             </div>

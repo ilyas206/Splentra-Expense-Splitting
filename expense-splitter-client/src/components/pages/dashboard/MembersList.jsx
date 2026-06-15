@@ -72,6 +72,7 @@ export default function MembersList({group, groupCreator, members, setMembers}){
                 user_id : response.data.id
             })
             setMembers([...members, data.newMember])
+            setToggleAddMemberForm(false)
             email.current.value = ''
             toast.success(data.message, {
                 style : {
@@ -99,6 +100,7 @@ export default function MembersList({group, groupCreator, members, setMembers}){
             setIsActionLoading(true)
             const {data} = await axiosClient.delete(`/api/groups/${group.id}/members/${id}`)
             setMembers(members.filter(member => member.id !== id))
+            setToggleAddMemberForm(false)
             email.current.value = ''
             toast.success(data.message, {
                 style : {
@@ -123,54 +125,55 @@ export default function MembersList({group, groupCreator, members, setMembers}){
 
     return <>
         <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold"><b>{group?.title}</b> Group Members</h1>
+            <h1 className="text-lg md:text-2xl font-bold">Group Members</h1>
             {
                 groupCreator?.id === user?.id && <button 
                     onClick={() => {
                         setToggleAddMemberForm(prev => !prev)
                     }}
-                    className='flex items-center gap-2 hover:bg-(--dark) transition-all duration-300 cursor-pointer p-3 rounded-md'>
-                    Add New Member
-                    <Plus size={17} />
+                    className='flex items-center gap-1 hover:bg-(--dark) text-sm md:text-lg transition-all duration-300 cursor-pointer p-3 rounded-md'>
+                    Add Member
+                    <Plus size={15} />
                 </button>
             }
         </div>
 
-        <div className="flex items-center mt-7">
-            <div className="w-9/12">
+        <div className="flex flex-col-reverse md:flex-row items-center gap-7 mt-7">
+            <div className="md:w-9/12">
                 {
                     members?.map((member, key) => {
                         return <div key={key} className="flex items-center gap-3 my-3">
-                            <span className="flex items-center justify-center bg-linear-to-tr from-(--darkest) to-(--light) text-(--darkest) font-extrabold w-10 h-10 rounded-full">{key + 1}</span>
-                            <p><span className="font-bold text-lg">{member.name}</span> / <span className="font-light">{member.email}</span></p>
-                            
+                            <span className="flex items-center justify-center bg-linear-to-tr from-(--darkest) to-(--light) text-(--darkest) font-extrabold w-7 h-7 md:w-10 md:h-10 rounded-full">{key + 1}</span>
+                            <p><span className="font-bold text-sm md:text-lg">{member.name}</span> / <span className="font-light text-sm md:text-lg">{member.email}</span></p>
                             {
                                 // Only the group creator can see REMOVE button for non-creator members
                                 (groupCreator?.id === user?.id && groupCreator?.id !== member.id) && 
-                                <AlertDialog>
-                                    <AlertDialogTrigger asChild>
-                                        <button className="text-(--input-border) hover:text-(--danger) underline cursor-pointer">Remove</button>
-                                    </AlertDialogTrigger>
-                                    <AlertDialogContent size="sm" className="bg-(--darker) text-(--light)">
-                                        <AlertDialogHeader>
-                                            <AlertDialogMedia className="bg-destructive/10 text-destructive/90 dark:bg-destructive/20 dark:text-destructive">
-                                                <Trash2Icon />
-                                            </AlertDialogMedia>
-                                            <AlertDialogTitle>Remove <b>"{member.name}"</b> From the Group ?</AlertDialogTitle>
-                                                <AlertDialogDescription className="text-(--light)">
-                                                    This will permanently remove this member from the group so it won't be able to share expenses with other members.
-                                                </AlertDialogDescription>
-                                            </AlertDialogHeader>
-                                            <AlertDialogAction 
-                                                onClick={() => handleRemoveMember(member.id)} 
-                                                variant="destructive">
-                                                    {
-                                                        isActionLoading ? <CircleDollarSign size={20} className='animate-spin'/> : <span>Remove</span>
-                                                    }
-                                            </AlertDialogAction>
-                                            <AlertDialogCancel className="text-(--light) hover:bg-(--dark) transition-all duration-300" variant="outlined">Cancel</AlertDialogCancel>
-                                    </AlertDialogContent>
-                                </AlertDialog>
+                                <div className="ml-auto md:ml-0">
+                                    <AlertDialog>
+                                        <AlertDialogTrigger asChild>
+                                            <button className="text-(--input-border) hover:text-(--danger) underline cursor-pointer">Remove</button>
+                                        </AlertDialogTrigger>
+                                        <AlertDialogContent size="sm" className="bg-(--darker) text-(--light)">
+                                            <AlertDialogHeader>
+                                                <AlertDialogMedia className="bg-destructive/10 text-destructive/90 dark:bg-destructive/20 dark:text-destructive">
+                                                    <Trash2Icon />
+                                                </AlertDialogMedia>
+                                                <AlertDialogTitle>Remove <b>"{member.name}"</b> From the Group ?</AlertDialogTitle>
+                                                    <AlertDialogDescription className="text-(--light)">
+                                                        This will permanently remove this member from the group so it won't be able to share expenses with other members.
+                                                    </AlertDialogDescription>
+                                                </AlertDialogHeader>
+                                                <AlertDialogAction 
+                                                    onClick={() => handleRemoveMember(member.id)} 
+                                                    variant="destructive">
+                                                        {
+                                                            isActionLoading ? <CircleDollarSign size={20} className='animate-spin'/> : <span>Remove</span>
+                                                        }
+                                                </AlertDialogAction>
+                                                <AlertDialogCancel className="text-(--light) hover:bg-(--dark) transition-all duration-300" variant="outlined">Cancel</AlertDialogCancel>
+                                        </AlertDialogContent>
+                                    </AlertDialog>
+                                </div>
                             }
                         </div>
                     })

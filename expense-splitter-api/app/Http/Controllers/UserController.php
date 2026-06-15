@@ -8,10 +8,6 @@ use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
-    public function index(){
-        return User::all(); 
-    }
-
     public function search(Request $request){
         $query = $request->query('q');
         $user = User::where('email', $query)->first();

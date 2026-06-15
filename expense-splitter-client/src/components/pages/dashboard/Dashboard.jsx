@@ -8,6 +8,8 @@ import { Toaster } from "@/components/ui/sonner";
 import { toast } from "sonner";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogMedia, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import Hero from "../../../assets/Hero.png" 
+import SmallHero from "../../../assets/Small_Hero.png" 
 
 export default function Dashboard(){
     const [groups, setGroups] = useState([])
@@ -130,7 +132,7 @@ export default function Dashboard(){
 
             <Navbar/>
 
-            <div className="flex flex-col flex-1 mt-15 text-(--light) w-9/10 mx-auto">
+            <div className="flex flex-col flex-1 text-(--light) w-9/10 mx-auto">
                 {
                     isLoading ? 
                     (
@@ -140,16 +142,22 @@ export default function Dashboard(){
                     ) : 
                     (
                         <>
-                            <hr className="text-(--input-border) mb-5" />
+                            <div className="hidden md:block w-full my-5">
+                                <img src={Hero} alt="hero banner" className="w-240 h-120 mx-auto rounded-2xl" />
+                            </div>
+                            <div className="block md:hidden w-full my-5">
+                                <img src={SmallHero} alt="hero banner" className="h-70 mx-auto rounded-2xl" />
+                            </div>
+
                             <div className="flex items-center justify-between">
-                                <h1 className="text-4xl font-bold">My Groups</h1>
+                                <h1 className="text-2xl md:text-4xl font-bold">My Groups</h1>
                                 <button 
                                     onClick={() => {
                                         setToggleCreateForm(prev => !prev)
                                         setEditedGroupID(null)
                                         setError(null)
                                     }} 
-                                    className='flex items-center gap-2 hover:bg-(--dark) transition-all duration-300 cursor-pointer p-3 rounded-md'>
+                                    className='flex items-center gap-2 hover:bg-(--dark) text-sm md:text-lg transition-all duration-300 cursor-pointer p-3 rounded-md'>
                                     Create
                                     <Plus size={17} />
                                 </button>
@@ -160,19 +168,22 @@ export default function Dashboard(){
                                 {
                                     toggleCreateForm && 
                                     <div className="my-7">
-                                        <h2 className="my-2 text-lg font-bold">Creating a new Group</h2>
+                                        <h2 className="my-2 text-md md:text-lg font-bold">Creating a new Group</h2>
                                         <form onSubmit={handleCreate}>
-                                            <div className="flex justify-center gap-2 w-full">
+                                            <div className="flex flex-col md:flex-row justify-center gap-2 w-full">
                                                 <div className="flex-1">
                                                     <input type="text" ref={createTitle} required className={`w-full border focus:ring-1 ${error?.message ? 'border-(--danger) focus:ring-(--danger)' : 'border-(--input-border) focus:ring-(--medium)'} rounded-md p-2 outline-none placeholder:text-sm transition-all duration-300`} placeholder="Title..." />
                                                 </div>
-                                                <button type="submit" className="flex items-center justify-center w-1/10 p-1 border border-(--input-border) rounded-md cursor-pointer transition-all duration-300 text-(--light) hover:bg-(--light) hover:border-(--light) hover:text-(--darkest) hover:tracking-widest">
+                                                {
+                                                    error?.message && <p className="md:hidden text-(--danger) font-bold text-sm">{error.message}</p>
+                                                }
+                                                <button type="submit" className="flex items-center justify-center w-full md:w-1/10 p-1 border border-(--input-border) rounded-md cursor-pointer transition-all duration-300 text-(--light) hover:bg-(--light) hover:border-(--light) hover:text-(--darkest) hover:tracking-widest">
                                                     {
                                                         isActionLoading ? <CircleDollarSign size={20} className='animate-spin'/> : <span>Create</span>
                                                     }
                                                 </button>
                                             </div>
-                                            <p className="text-(--danger) font-bold text-sm mt-1">{error?.message}</p>
+                                            <p className="hidden md:block text-(--danger) font-bold text-sm mt-1">{error?.message}</p>
                                         </form>
                                     </div>
                                 }
@@ -183,19 +194,22 @@ export default function Dashboard(){
                                 {
                                     editedGroupID && 
                                     <div className="my-7">
-                                        <h2 className="my-2 text-lg font-bold">Editing an existing Group</h2>
+                                        <h2 className="my-2 text-md md:text-lg font-bold">Editing an existing Group</h2>
                                         <form onSubmit={(e) => handleEdit(e, editedGroupID)}>
-                                            <div className="flex justify-center gap-2 w-full">
+                                            <div className="flex flex-col md:flex-row justify-center gap-2 w-full">
                                                 <div className="flex-1">
                                                     <input type="text" value={editedGroupTitle} onChange={(e) => setEditedGroupTitle(e.target.value)} required className={`w-full border focus:ring-1 ${error?.message ? 'border-(--danger) focus:ring-(--danger)' : 'border-(--input-border) focus:ring-(--medium)'} rounded-md p-2 outline-none placeholder:text-sm transition-all duration-300`} placeholder="Title..." />
                                                 </div>
-                                                <button type="submit" className="flex items-center justify-center w-1/10 p-1 border border-(--input-border) rounded-md cursor-pointer transition-all duration-300 text-(--light) hover:bg-(--light) hover:border-(--light) hover:text-(--darkest) hover:tracking-widest">
+                                                {
+                                                    error?.message && <p className="md:hidden text-(--danger) font-bold text-sm">{error.message}</p>
+                                                }
+                                                <button type="submit" className="flex items-center justify-center w-full md:w-1/10 p-1 border border-(--input-border) rounded-md cursor-pointer transition-all duration-300 text-(--light) hover:bg-(--light) hover:border-(--light) hover:text-(--darkest) hover:tracking-widest">
                                                     {
                                                         isActionLoading ? <CircleDollarSign size={20} className='animate-spin'/> : <span>Edit</span>
                                                     }
                                                 </button>
                                             </div>
-                                            <p className="text-(--danger) font-bold text-sm mt-1">{error?.message}</p>
+                                            <p className="hidden md:block text-(--danger) font-bold text-sm mt-1">{error?.message}</p>
                                         </form>
                                     </div>
                                 }
@@ -203,7 +217,7 @@ export default function Dashboard(){
 
                             {
                                 groups.length > 0 ? 
-                                    <div className="grid grid-cols-3 gap-4 mt-7">
+                                    <div className="grid grid-col-1 md:grid-cols-3 gap-4 mt-7">
                                         {
                                         groups.map(group => {
                                             const isCreator = user?.id === group.created_by

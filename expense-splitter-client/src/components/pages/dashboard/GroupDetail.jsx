@@ -42,7 +42,7 @@ export default function GroupDetail(){
             }
         }
         getGroup()
-    }, [])
+    }, [id])
 
     return(
         <div className="min-h-dvh flex flex-col">
@@ -59,15 +59,13 @@ export default function GroupDetail(){
                     ) : 
                     (
                         <>
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                    <h1 className="text-4xl font-bold"><b>{group?.title}</b> Group</h1>
-                                    <span className="bg-(--medium) text-(--darkest) p-2 rounded-lg">Created by <b>{groupCreator?.id === user?.id ? 'Me' : groupCreator?.name}</b></span>
-                                </div>
-                                <div className="flex items-center gap-2">
+                            <div className="flex flex-col md:flex-row gap-2 mx-auto md:mx-0 md:items-center md:justify-between">
+                                <h1 className="text-3xl md:text-4xl text-center font-bold py-3"><b>{group?.title}</b> Group</h1>
+                                <span className="bg-(--medium) text-(--darkest) text-sm md:text-lg p-2 rounded-lg text-center">Created by <b>{groupCreator?.id === user?.id ? 'Me' : groupCreator?.name}</b></span>
+                                <div className="flex items-center justify-center gap-2 md:gap-2 md:ml-auto">
                                     <Tooltip>
                                         <TooltipTrigger>
-                                            <span className="bg-(--medium) text-(--darkest) p-2 rounded-lg">Edited <b>{group?.formatted_updated_at}</b></span>
+                                            <div className="bg-(--medium) text-sm md:text-lg text-(--darkest) p-2 rounded-lg">Edited <b>{group?.formatted_updated_at}</b></div>
                                         </TooltipTrigger>
                                         <TooltipContent>
                                             <span>Last Group Edit</span>
@@ -75,7 +73,7 @@ export default function GroupDetail(){
                                     </Tooltip>
                                     <Tooltip>
                                         <TooltipTrigger>
-                                            <span className="bg-(--dark) text-(--light) p-2 rounded-lg">Created <b>{group?.formatted_created_at}</b></span>
+                                            <div className="bg-(--dark) text-(--light) text-sm md:text-lg p-2 rounded-lg">Created <b>{group?.formatted_created_at}</b></div>
                                         </TooltipTrigger>
                                         <TooltipContent>
                                             <span>Group Creation</span>

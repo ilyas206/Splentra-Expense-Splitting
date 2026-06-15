@@ -127,8 +127,8 @@ export default function ExpensesList({group, members, expenses, setExpenses}){
     }
 
     return <>
-            <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold"><b>{group?.title}</b> Group Expenses</h1>
+    <div className="flex items-center justify-between">
+        <h1 className="text-lg md:text-2xl font-bold">Group Expenses</h1>
         <button 
             onClick={() => {
                 setToggleCreateExpenseForm(prev => !prev)
@@ -136,9 +136,9 @@ export default function ExpensesList({group, members, expenses, setExpenses}){
                 setSelectedMemberIds([])
                 setErrors(null)
             }}
-            className='flex items-center gap-2 hover:bg-(--dark) transition-all duration-300 cursor-pointer p-3 rounded-md'>
+            className='flex items-center gap-2 hover:bg-(--dark) text-sm md:text-lg transition-all duration-300 cursor-pointer p-3 rounded-md'>
             Create
-            <Plus size={17} />
+            <Plus size={15} />
         </button>
     </div>
 
@@ -147,23 +147,30 @@ export default function ExpensesList({group, members, expenses, setExpenses}){
         {
             toggleCreateExpenseForm && 
             <div className="my-7">
-                <h2 className="my-2 text-lg font-bold">Creating a new Expense</h2>
+                <h2 className="my-2 text-md md:text-lg font-bold">Creating a new Expense</h2>
                 <form onSubmit={handleCreate}>
-                    <div className="flex items-center gap-2">
-                        <input type="text" ref={category} placeholder="Category..." required className={`w-2/3 border focus:ring-1 ${errors?.category ? 'border-(--danger) focus:ring-(--danger)' : 'border-(--input-border) focus:ring-(--medium)'} rounded-md p-2 outline-none placeholder:text-sm transition-all duration-300`} />
-                        <input type="number" step="0.01" min="5.01" ref={amount} placeholder="Amount..." required className={`w-1/3 border focus:ring-1 ${errors?.amount ? 'border-(--danger) focus:ring-(--danger)' : 'border-(--input-border) focus:ring-(--medium)'} rounded-md p-2 outline-none placeholder:text-sm transition-all duration-300`} />
+                    <div className="flex flex-col md:flex-row items-center gap-2">
+                        <input type="text" ref={category} placeholder="Category..." required className={`w-full md:w-2/3 border focus:ring-1 ${errors?.category ? 'border-(--danger) focus:ring-(--danger)' : 'border-(--input-border) focus:ring-(--medium)'} rounded-md p-2 outline-none placeholder:text-sm transition-all duration-300`} />
+                        {
+                            errors?.category && <p className="md:hidden w-full text-(--danger) font-bold text-sm">{errors.category[0]}</p>
+                        }
+                        <input type="number" step="0.01" min="5.01" ref={amount} placeholder="Amount..." required className={`w-full md:w-1/3 border focus:ring-1 ${errors?.amount ? 'border-(--danger) focus:ring-(--danger)' : 'border-(--input-border) focus:ring-(--medium)'} rounded-md p-2 outline-none placeholder:text-sm transition-all duration-300`} />
+                        {
+                            errors?.amount && <p className="md:hidden w-full text-(--danger) font-bold text-sm">{errors.amount[0]}</p>
+                        } 
                     </div>
-                    <div className="flex items-center gap-2 my-2">
+                    {/* This layout is only displayed for medium screens and above */}
+                    <div className="hidden md:flex items-center gap-2 my-2">
                         <p className="w-2/3 text-(--danger) font-bold text-sm">{errors?.category && errors.category[0]}</p>
                         <p className="w-1/3 text-(--danger) font-bold text-sm">{errors?.amount && errors.amount[0]}</p>
                     </div>
 
                     <div>
-                        <textarea placeholder="Description..." ref={description} required className={`w-full resize-none border focus:ring-1 ${errors?.description ? 'border-(--danger) focus:ring-(--danger)' : 'border-(--input-border) focus:ring-(--medium)'} rounded-md p-2 outline-none placeholder:text-sm transition-all duration-300`}></textarea>
+                        <textarea placeholder="Description..." ref={description} required className={`w-full resize-none border focus:ring-1 ${errors?.description ? 'border-(--danger) focus:ring-(--danger)' : 'border-(--input-border) focus:ring-(--medium)'} rounded-md p-2 mt-2 md:mt-0 outline-none placeholder:text-sm transition-all duration-300`}></textarea>
                         <p className="text-(--danger) font-bold text-sm mt-1">{errors?.description && errors.description[0]}</p>
                     </div>
 
-                    <h3 className="font-bold mb-4">Select Members</h3>
+                    <h3 className="text-sm md:text-lg font-bold mb-4">Select Members</h3>
                     <FieldGroup className="ml-2">
                         {
                             members?.map(member => <Field key={member.id} orientation="horizontal">
@@ -178,7 +185,7 @@ export default function ExpensesList({group, members, expenses, setExpenses}){
                         <p className="text-(--danger) font-bold text-sm mt-1">{errors?.member_ids && errors.member_ids[0]}</p>
                     </FieldGroup>
 
-                    <button type="submit" className="flex items-center justify-center w-1/10 p-1 my-3 border border-(--input-border) rounded-md cursor-pointer transition-all duration-300 text-(--light) hover:bg-(--light) hover:border-(--light) hover:text-(--darkest) hover:tracking-widest">
+                    <button type="submit" className="flex items-center justify-center w-full md:w-1/10 p-1 my-3 border border-(--input-border) rounded-md cursor-pointer transition-all duration-300 text-(--light) hover:bg-(--light) hover:border-(--light) hover:text-(--darkest) hover:tracking-widest">
                         {
                             isActionLoading ? <CircleDollarSign size={20} className='animate-spin'/> : <span>Create</span>
                         }
@@ -193,25 +200,32 @@ export default function ExpensesList({group, members, expenses, setExpenses}){
         {
             editedExpense && 
             <div className="my-7">
-                <h2 className="my-2 text-lg font-bold">Editing an existing Expense</h2>
+                <h2 className="my-2 text-md md:text-lg font-bold">Editing an existing Expense</h2>
                 <form onSubmit={handleEdit}>
-                    <div className="flex items-center gap-2">
-                        <input type="text" value={editedExpense.category} onChange={(e) => setEditedExpense({...editedExpense, category : e.target.value})} placeholder="Category..." required className={`w-2/3 border focus:ring-1 ${errors?.category ? 'border-(--danger) focus:ring-(--danger)' : 'border-(--input-border) focus:ring-(--medium)'} rounded-md p-2 outline-none placeholder:text-sm transition-all duration-300`} />
-                        <input type="number" value={editedExpense.amount} onChange={(e) => setEditedExpense({...editedExpense, amount : e.target.value})} step="0.01" min="5.01" placeholder="Amount..." required className={`w-1/3 border focus:ring-1 ${errors?.amount ? 'border-(--danger) focus:ring-(--danger)' : 'border-(--input-border) focus:ring-(--medium)'} rounded-md p-2 outline-none placeholder:text-sm transition-all duration-300`} />
+                    <div className="flex flex-col md:flex-row items-center gap-2">
+                        <input type="text" value={editedExpense.category} onChange={(e) => setEditedExpense({...editedExpense, category : e.target.value})} placeholder="Category..." required className={`w-full md:w-2/3 border focus:ring-1 ${errors?.category ? 'border-(--danger) focus:ring-(--danger)' : 'border-(--input-border) focus:ring-(--medium)'} rounded-md p-2 outline-none placeholder:text-sm transition-all duration-300`} />
+                        {
+                            errors?.category && <p className="md:hidden w-full text-(--danger) font-bold text-sm">{errors.category[0]}</p>
+                        }
+                        <input type="number" value={editedExpense.amount} onChange={(e) => setEditedExpense({...editedExpense, amount : e.target.value})} step="0.01" min="5.01" placeholder="Amount..." required className={`w-full md:w-1/3 border focus:ring-1 ${errors?.amount ? 'border-(--danger) focus:ring-(--danger)' : 'border-(--input-border) focus:ring-(--medium)'} rounded-md p-2 outline-none placeholder:text-sm transition-all duration-300`} />
+                        {
+                            errors?.amount && <p className="md:hidden w-full text-(--danger) font-bold text-sm">{errors.amount[0]}</p>
+                        } 
                     </div>
-                    <div className="flex items-center gap-2 my-2">
+                    {/* This layout is only displayed for medium screens and above */}
+                    <div className="hidden md:flex items-center gap-2 my-2">
                         <p className="w-2/3 text-(--danger) font-bold text-sm">{errors?.category && errors.category[0]}</p>
                         <p className="w-1/3 text-(--danger) font-bold text-sm">{errors?.amount && errors.amount[0]}</p>
                     </div>
 
                     <div>
                         <textarea placeholder="Description..." required value={editedExpense.description} onChange={(e) => setEditedExpense({...editedExpense, description : e.target.value})}
-                            className={`w-full resize-none border focus:ring-1 ${errors?.description ? 'border-(--danger) focus:ring-(--danger)' : 'border-(--input-border) focus:ring-(--medium)'} rounded-md p-2 outline-none placeholder:text-sm transition-all duration-300`}>
+                            className={`w-full resize-none border focus:ring-1 ${errors?.description ? 'border-(--danger) focus:ring-(--danger)' : 'border-(--input-border) focus:ring-(--medium)'} rounded-md p-2 mt-2 md:mt-0 outline-none placeholder:text-sm transition-all duration-300`}>
                         </textarea>
                         <p className="text-(--danger) font-bold text-sm mt-1">{errors?.description && errors.description[0]}</p>
                     </div>
 
-                    <h3 className="font-bold mb-4">Select Members</h3>
+                    <h3 className="text-sm md:text-lg font-bold mb-4">Select Members</h3>
                     <FieldGroup className="ml-2">
                         {
                             members?.map(member => <Field key={member.id} orientation="horizontal">
@@ -227,7 +241,7 @@ export default function ExpensesList({group, members, expenses, setExpenses}){
                         <p className="text-(--danger) font-bold text-sm">{errors?.member_ids && errors.member_ids[0]}</p>
                     </FieldGroup>
 
-                    <button type="submit" className="flex items-center justify-center w-1/10 p-1 my-3 border border-(--input-border) rounded-md cursor-pointer transition-all duration-300 text-(--light) hover:bg-(--light) hover:border-(--light) hover:text-(--darkest) hover:tracking-widest">
+                    <button type="submit" className="flex items-center justify-center w-full md:w-1/10 p-1 my-3 border border-(--input-border) rounded-md cursor-pointer transition-all duration-300 text-(--light) hover:bg-(--light) hover:border-(--light) hover:text-(--darkest) hover:tracking-widest">
                         {
                             isActionLoading ? <CircleDollarSign size={20} className='animate-spin'/> : <span>Edit</span>
                         }
@@ -238,7 +252,7 @@ export default function ExpensesList({group, members, expenses, setExpenses}){
     </>
 
     {
-        expenses.length > 0 ? <div className="grid grid-cols-3 gap-4 mt-7">
+        expenses.length > 0 ? <div className="grid grid-col-1 md:grid-cols-3 gap-4 mt-7">
             {
                 expenses.map(expense => {
                 const isPayer = user?.id === expense.payer_id

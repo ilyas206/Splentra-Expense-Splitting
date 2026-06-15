@@ -26,11 +26,11 @@ export default function Login(){
 
     return(
         <div className="flex items-center justify-around min-h-screen">
-            <div>
+            <div className="hidden md:block">
                 <img src={SplentraSlogan} alt="Splentra" className="w-140" />
             </div>
-            <div className="border border-(--border-color) shadow-2xl rounded-md w-2/5 p-7 text-(--light) bg-(--dark)">
-                <h1 className="text-center text-4xl font-bold mb-7">Welcome back !</h1>
+            <div className="border border-(--border-color) shadow-2xl rounded-md w-full mx-6 md:mx-0 md:w-2/5 p-7 text-(--light) bg-(--dark)">
+                <h1 className="text-center text-2xl md:text-4xl font-bold mb-4 md:mb-7">Welcome back !</h1>
                 <p className="text-center font-thin">Please enter your credentials</p>
                 <h4 className="text-center text-(--danger) font-bold my-3">{errors?.message}</h4>
                 <form onSubmit={handleSubmit}>
@@ -51,7 +51,7 @@ export default function Login(){
                         }
                     </button>
                 </form>
-                <div className="text-center my-3 hover:underline">
+                <div className="text-center text-sm md:text-md my-3 hover:underline">
                     <Link to='/register'>New here ? create your account now !</Link>
                 </div>
             </div>

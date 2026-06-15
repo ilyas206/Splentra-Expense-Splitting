@@ -71,19 +71,19 @@ export default function ExpenseDetail(){
         const isSplitMemberPayer = expense?.payer_id === split.user_id
 
         if(isSplitMemberPayer){
-            return 'flex items-center justify-center gap-2 bg-linear-to-tr from-(--darkest) to-(--warning) text-(--light) border-2 border-(--border-color) font-extrabold w-30 h-10 rounded-full'
+            return 'flex items-center justify-center gap-2 bg-linear-to-tr from-(--darkest) to-(--warning) text-(--light) border-2 border-(--border-color) font-extrabold text-sm md:text-base w-25 h-8 md:w-30 md:h-10 rounded-full'
         }else if(split.is_paid && !isSplitMemberPayer){
-            return 'flex items-center justify-center gap-2 bg-linear-to-tr from-(--darkest) to-(--dark) text-(--light) border-2 border-(--border-color) font-extrabold w-30 h-10 rounded-full'
+            return 'flex items-center justify-center gap-2 bg-linear-to-tr from-(--darkest) to-(--dark) text-(--light) border-2 border-(--border-color) font-extrabold text-sm md:text-base w-25 h-8 md:w-30 md:h-10 rounded-full'
         }else{
-            return 'cursor-pointer flex items-center justify-center gap-2 bg-linear-to-tr from-(--darkest) to-(--danger) text-(--light) border-2 border-(--border-color) font-extrabold w-30 h-10 rounded-full'
+            return 'cursor-pointer flex items-center justify-center gap-2 bg-linear-to-tr from-(--darkest) to-(--danger) text-(--light) border-2 border-(--border-color) font-extrabold text-sm md:text-base w-25 h-8 md:w-30 md:h-10 rounded-full'
         }
     }
 
     const unknownPaidClasses = (split) => {
         if(expense?.payer_id === split.user_id){
-            return 'flex items-center justify-center gap-2 bg-linear-to-tr from-(--darkest) to-(--warning) text-(--light) border-2 border-(--border-color) font-extrabold w-30 h-10 rounded-full'
+            return 'flex items-center justify-center gap-2 bg-linear-to-tr from-(--darkest) to-(--warning) text-(--light) border-2 border-(--border-color) font-extrabold text-sm md:text-base w-25 h-8 md:w-30 md:h-10 rounded-full'
         }else{
-            return 'flex items-center justify-center gap-2 bg-linear-to-tr from-(--darkest) to-(--input-border) text-(--light) border-2 border-(--border-color) font-extrabold w-30 h-10 rounded-full'
+            return 'flex items-center justify-center gap-2 bg-linear-to-tr from-(--darkest) to-(--input-border) text-(--light) border-2 border-(--border-color) font-extrabold text-sm md:text-base w-25 h-8 md:w-30 md:h-10 rounded-full'
         }
     }
 
@@ -143,36 +143,36 @@ export default function ExpenseDetail(){
                     ) : 
                     (
                         <>
-                            <Breadcrumb className="mb-4">
+                            <Breadcrumb className="mb-6 mx-auto md:mx-0">
                                 <BreadcrumbList className="text-(--light)">
                                     <BreadcrumbItem>
-                                    <BreadcrumbLink className="hover:text-(--medium)" href="/dashboard">Groups</BreadcrumbLink>
+                                        <BreadcrumbLink className="hover:text-(--medium) text-xs md:text-base" href="/dashboard">Groups</BreadcrumbLink>
                                     </BreadcrumbItem>
                                     <BreadcrumbSeparator />
                                     <BreadcrumbItem>
-                                    <BreadcrumbLink className="hover:text-(--medium)" href={`/groups/${expenseGroup?.id}`}>{expenseGroup?.title} Group</BreadcrumbLink>
+                                        <BreadcrumbLink className="hover:text-(--medium) text-xs md:text-base" href={`/groups/${expenseGroup?.id}`}>{expenseGroup?.title} Group</BreadcrumbLink>
                                     </BreadcrumbItem>
                                     <BreadcrumbSeparator />
                                     <BreadcrumbItem>
-                                        <BreadcrumbPage className="text-(--medium)">{expense?.category} Expense</BreadcrumbPage>
+                                        <BreadcrumbPage className="text-(--medium) text-xs md:text-base">{expense?.category} Expense</BreadcrumbPage>
                                     </BreadcrumbItem>
                                 </BreadcrumbList>
                             </Breadcrumb>
 
-                            <div className="flex items-center justify-between">
-                                <div className="flex flex-col gap-2">
+                            <div className="flex flex-col md:flex-row gap-7 items-center justify-between">
+                                <div className="flex flex-col text-center md:text-left gap-2">
                                     <h1 className="text-4xl font-bold"><b>{expense?.category}</b> Expense</h1>
                                     <p className="text-sm font-light">{expense?.description}</p>
                                     <p className="text-sm font-light">Amount <span className="text-3xl font-medium">{expense?.amount}</span></p>
                                 </div>
-                                <div className="flex flex-col gap-4">
+                                <div className="flex flex-col gap-3 md:gap-4">
                                     <div className="flex text-center flex-1">
-                                        <span className="bg-linear-to-r from-(--medium) to-(--dark) text-(--darkest) p-2 rounded-lg w-full">Paid by <b>{expensePayer?.id === user?.id ? 'Me' : expensePayer?.name}</b></span>
+                                        <span className="bg-linear-to-r from-(--medium) to-(--dark) text-(--darkest) text-sm md:text-lg p-2 rounded-lg w-full">Paid by <b>{expensePayer?.id === user?.id ? 'Me' : expensePayer?.name}</b></span>
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <Tooltip>
                                             <TooltipTrigger>
-                                                <span className="bg-(--medium) text-(--darkest) p-2 rounded-lg">Edited <b>{expense?.formatted_updated_at}</b></span>
+                                                <span className="bg-(--medium) text-(--darkest) text-sm md:text-lg p-2 rounded-lg">Edited <b>{expense?.formatted_updated_at}</b></span>
                                             </TooltipTrigger>
                                             <TooltipContent side="bottom">
                                                 <span>Last Expense Edit</span>
@@ -180,7 +180,7 @@ export default function ExpenseDetail(){
                                         </Tooltip>
                                         <Tooltip>
                                             <TooltipTrigger>
-                                                <span className="bg-(--dark) text-(--light) p-2 rounded-lg">Created <b>{expense?.formatted_created_at}</b></span>
+                                                <span className="bg-(--dark) text-(--light) text-sm md:text-lg p-2 rounded-lg">Created <b>{expense?.formatted_created_at}</b></span>
                                             </TooltipTrigger>
                                             <TooltipContent side="bottom">
                                                 <span>Expense Creation</span>
@@ -194,27 +194,27 @@ export default function ExpenseDetail(){
 
                             {
                                 isPayer ? <>
-                                    <h1 className="text-xl font-bold">Splits Status for Members ({expenseSplits?.length} Splits)</h1>
-                                    <div className={`${expenseSplits.length > 2 ? 'grid grid-cols-3' : 'flex items-center justify-around'} mt-7`}>
+                                    <h1 className="text-md md:text-xl font-bold text-center md:text-left">Splits Status for Members ({expenseSplits?.length} Splits)</h1>
+                                    <div className={`${expenseSplits.length > 2 ? 'grid grid-col-1 mx-auto md:mx-0 md:grid-cols-3' : 'flex flex-col md:flex-row mx-auto md:mx-0 md:items-center md:justify-around'} mt-7`}>
                                         {
                                             expenseSplits?.map((split, key) => {
                                                 return <div key={key} className="flex items-center gap-3 my-3">
                                                     <Tooltip>
                                                         <TooltipTrigger>
-                                                            <span className={isPaidClasses(split)}>{split.is_paid ? <DollarSign /> : <X/>} {split.share_amount}</span>
+                                                            <span className={isPaidClasses(split)}>{split.is_paid ? <DollarSign size={20}/> : <X size={20}/>} {split.share_amount}</span>
                                                         </TooltipTrigger>
                                                         <TooltipContent>
                                                             <span>{isPaidTooltip(split)}</span>
                                                         </TooltipContent>
                                                     </Tooltip>
-                                                    <p><span className="font-bold text-lg">{split.user.name}</span> / <span className="font-light">{split.user.email}</span></p>
+                                                    <p><span className="font-bold text-sm md:text-lg">{split.user.name}</span> / <span className="font-light text-sm md:text-lg">{split.user.email}</span></p>
                                                 </div>
                                             })
                                         }
                                     </div>
                                 </> : <>
-                                    <h1 className="text-xl font-bold">Expense Members</h1>
-                                    <div className={`${expenseSplits.length > 2 ? 'grid grid-cols-3' : 'flex items-center justify-around'} mt-7`}>
+                                    <h1 className="text-md md:text-xl font-bold text-center md:text-left">Expense Members</h1>
+                                    <div className={`${expenseSplits.length > 2 ? 'grid grid-col-1 mx-auto md:mx-0 md:grid-cols-3' : 'flex flex-col md:flex-row mx-auto md:mx-0 md:items-center md:justify-around'} mt-7`}>
                                         {
                                             expenseSplits?.map((split, key) => {
                                                 if(split.user_id === user?.id){
@@ -224,7 +224,7 @@ export default function ExpenseDetail(){
                                                                 {
                                                                     !split.is_paid ? <AlertDialog>
                                                                         <AlertDialogTrigger asChild>
-                                                                            <span className={isPaidClasses(split)}><X/> {split.share_amount}</span>
+                                                                            <span className={isPaidClasses(split)}><X size={20}/> {split.share_amount}</span>
                                                                         </AlertDialogTrigger>
                                                                         <AlertDialogContent size="sm" className="bg-(--darker) text-(--light)">
                                                                             <AlertDialogHeader>
@@ -246,27 +246,27 @@ export default function ExpenseDetail(){
                                                                                 </AlertDialogAction>
                                                                                 <AlertDialogCancel className="text-(--light) hover:bg-(--dark) transition-all duration-300" variant="outlined">Cancel</AlertDialogCancel>
                                                                         </AlertDialogContent>
-                                                                    </AlertDialog> : <span className={isPaidClasses(split)}><DollarSign /> {split.share_amount}</span>
+                                                                    </AlertDialog> : <span className={isPaidClasses(split)}><DollarSign size={20} /> {split.share_amount}</span>
                                                                 }
                                                             </TooltipTrigger>
                                                             <TooltipContent>
                                                                 <span>{split.is_paid ? 'You Already Have Paid Your Split' : 'You Have NOT Paid Your Split Yet , Pay NOW ?'}</span>
                                                             </TooltipContent>
                                                         </Tooltip>
-                                                        <p><span className="font-bold text-lg">{split.user.name}</span> / <span className="font-light">{split.user.email}</span></p>
+                                                        <p><span className="font-bold text-sm md:text-lg">{split.user.name}</span> / <span className="font-light text-sm md:text-lg">{split.user.email}</span></p>
                                                     </div>
                                                 }else{
                                                     const isSplitExpensePayer = split.user_id === expense?.payer_id
                                                     return <div key={key} className="flex items-center gap-3 my-3">
                                                         <Tooltip>
                                                             <TooltipTrigger>
-                                                                <span className={unknownPaidClasses(split)}>{isSplitExpensePayer ? <DollarSign /> : <CircleQuestionMark />} {split.share_amount}</span>
+                                                                <span className={unknownPaidClasses(split)}>{isSplitExpensePayer ? <DollarSign size={20} /> : <CircleQuestionMark size={20} />} {split.share_amount}</span>
                                                             </TooltipTrigger>
                                                             <TooltipContent>
                                                                 <span>{isSplitExpensePayer ? split.user.name + ' Is The Payer So His Split Is Already Paid' : 'You Cannot See Other Members Payment Status'}</span>
                                                             </TooltipContent>
                                                         </Tooltip>
-                                                        <p><span className="font-bold text-lg">{split.user.name}</span> / <span className="font-light">{split.user.email}</span></p>
+                                                        <p><span className="font-bold text-sm md:text-lg">{split.user.name}</span> / <span className="font-light text-sm md:text-lg">{split.user.email}</span></p>
                                                     </div>
                                                 }
                                             })
