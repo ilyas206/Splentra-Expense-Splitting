@@ -16,7 +16,7 @@ return new class extends Migration
             $table->decimal('share_amount', 8, 2);
             $table->boolean('is_paid')->default(false);
             $table->foreignId('expense_id')->constrained('expenses')->cascadeOnDelete();
-            $table->foreignId('user_id')->constrained('users');
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->timestamps();
         });
     }

@@ -1,6 +1,3 @@
-todos : 
-- adding currency for expense amount
-
 users
   id, name, email, password
 
@@ -17,23 +14,3 @@ expenses
 expense_splits
   id, expense_id (FK), user_id (FK),
   share_amount, is_paid
-
-Endpoints :
-
-POST   /register
-POST   /login
-POST   /logout
-
-POST   /groups
-GET    /groups
-GET    /groups/{group}
-PUT    /groups/{group}
-DELETE /groups/{group}
-POST   /groups/{group}/members
-
-POST   /expenses
-GET    /groups/{group}/expenses
-PUT    /expenses/{expense}
-DELETE /expenses/{expense}
-
-PUT    /expense_splits/{split}

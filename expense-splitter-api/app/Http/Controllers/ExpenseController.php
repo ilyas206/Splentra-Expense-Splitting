@@ -51,9 +51,10 @@ class ExpenseController extends Controller
         }
 
         $formFields = $request->validate([
-            'category' => ['required', 'min:3', 'max:10'],
+            'category' => ['required', 'min:3', 'max:20'],
             'description' => ['required', 'min:5', 'max:255'],
             'amount' => ['required', 'decimal:1,2'],
+            'currency' => ['required', 'uppercase', 'min:3', 'max:3'],
             'member_ids' => ['required', 'array'],
             'member_ids.*' => Rule::exists(User::class, 'id')
         ]);
@@ -106,9 +107,10 @@ class ExpenseController extends Controller
         }
 
         $formFields = $request->validate([
-            'category' => ['min:3', 'max:255'],
+            'category' => ['min:3', 'max:20'],
             'description' => ['min:5'],
             'amount' => ['decimal:1,2'],
+            'currency' => ['uppercase', 'min:3', 'max:3'],
             'member_ids' => ['required', 'array'],
             'member_ids.*' => Rule::exists(User::class, 'id')
         ]);

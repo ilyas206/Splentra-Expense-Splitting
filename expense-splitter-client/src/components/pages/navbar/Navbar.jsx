@@ -1,4 +1,4 @@
-import { CircleDollarSign, LayoutDashboard, LogOut, Menu } from 'lucide-react'
+import { CircleDollarSign, LayoutDashboard, LogOut, Menu, UserRound } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import Logo from '/logo.png'
 import { useState } from 'react'
@@ -7,7 +7,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 
 export default function Navbar(){
     const [isLoading, setIsLoading] = useState(false)
-    const { logout } = useAuth()
+    const { user, logout } = useAuth()
 
     const handleLogout = async () => {
         try {   
@@ -27,7 +27,12 @@ export default function Navbar(){
                 <p className='app-name text-2xl md:text-4xl text-(--light) mt-3'>Splentra</p>
             </div>
 
+            {/* Navbar items / buttons for medium & bigger screens */}
             <div className="hidden md:flex items-center gap-10">
+                <Link to={`/user/${user?.id}`} className='flex items-center gap-2 text-(--light) hover:bg-(--darkest) transition-all duration-300 cursor-pointer p-2 rounded-md'>
+                    Profile 
+                    <UserRound size={15} />
+                </Link>
                 <Link to={'/dashboard'} className='flex items-center gap-2 text-(--light) hover:bg-(--darkest) transition-all duration-300 cursor-pointer p-2 rounded-md'>
                     Dashboard 
                     <LayoutDashboard size={15} />
@@ -40,6 +45,7 @@ export default function Navbar(){
                 </button>
             </div>
 
+            {/* Dropdown menu for smaller screens  */}
             <div className="block md:hidden">
                 <DropdownMenu> 
                 <DropdownMenuTrigger asChild>
@@ -52,6 +58,15 @@ export default function Navbar(){
                         >
                             Dashboard 
                             <LayoutDashboard />
+                        </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem>
+                        <Link to={`/user/${user?.id}`} 
+                            className='flex items-center justify-center w-full text-(--light) gap-2 cursor-pointer p-2'
+                        >
+                            Profile 
+                            <UserRound />
                         </Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />

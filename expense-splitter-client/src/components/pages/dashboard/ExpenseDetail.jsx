@@ -163,7 +163,7 @@ export default function ExpenseDetail(){
                                 <div className="flex flex-col text-center md:text-left gap-2">
                                     <h1 className="text-4xl font-bold"><b>{expense?.category}</b> Expense</h1>
                                     <p className="text-sm font-light">{expense?.description}</p>
-                                    <p className="text-sm font-light">Amount <span className="text-3xl font-medium">{expense?.amount}</span></p>
+                                    <p className="text-sm font-light">Amount <span className="text-2xl md:text-3xl font-medium">{expense?.amount} {expense?.currency}</span></p>
                                 </div>
                                 <div className="flex flex-col gap-3 md:gap-4">
                                     <div className="flex text-center flex-1">
@@ -194,7 +194,10 @@ export default function ExpenseDetail(){
 
                             {
                                 isPayer ? <>
-                                    <h1 className="text-md md:text-xl font-bold text-center md:text-left">Splits Status for Members ({expenseSplits?.length} Splits)</h1>
+                                    <div className="flex items-center gap-6 md:gap-2 justify-center md:justify-start">
+                                        <h1 className="text-md md:text-xl font-bold text-center md:text-left">Splits Status for Members</h1>
+                                        <span className="bg-(--medium) text-(--darkest) text-sm md:text-base font-bold py-1 px-2 rounded-lg">{expenseSplits?.length} Splits</span>
+                                    </div>
                                     <div className={`${expenseSplits.length > 2 ? 'grid grid-col-1 mx-auto md:mx-0 md:grid-cols-3' : 'flex flex-col md:flex-row mx-auto md:mx-0 md:items-center md:justify-around'} mt-7`}>
                                         {
                                             expenseSplits?.map((split, key) => {

@@ -22,6 +22,7 @@ export default function ExpensesList({group, members, expenses, setExpenses}){
     const category = useRef()
     const description = useRef()
     const amount = useRef()
+    const currency = useRef()
 
     useEffect(() => {
         const getExpenseSplits = async () => {
@@ -50,12 +51,14 @@ export default function ExpensesList({group, members, expenses, setExpenses}){
                 category : category.current.value,
                 description : description.current.value,
                 amount : amount.current.value,
+                currency : currency.current.value,
                 member_ids : selectedMemberIds
             })
             setExpenses([...expenses, data.expense])
             category.current.value = ''
             description.current.value = ''
             amount.current.value = ''
+            currency.current.value = ''
             setSelectedMemberIds([])
             setErrors(null)
             toast.success(data.message, {
@@ -80,6 +83,7 @@ export default function ExpensesList({group, members, expenses, setExpenses}){
                 category : editedExpense.category,
                 description : editedExpense.description,
                 amount : editedExpense.amount,
+                currency : editedExpense.currency,
                 member_ids : selectedMemberIds
             })
             setExpenses(expenses.map(expense => expense.id === editedExpense.id ? response.data.expense : expense))
@@ -133,7 +137,7 @@ export default function ExpensesList({group, members, expenses, setExpenses}){
             onClick={() => {
                 setToggleCreateExpenseForm(prev => !prev)
                 setEditedExpense(null)
-                setSelectedMemberIds([])
+                setSelectedMemberIds([user?.id])
                 setErrors(null)
             }}
             className='flex items-center gap-2 hover:bg-(--dark) text-sm md:text-lg transition-all duration-300 cursor-pointer p-3 rounded-md'>
@@ -150,19 +154,24 @@ export default function ExpensesList({group, members, expenses, setExpenses}){
                 <h2 className="my-2 text-md md:text-lg font-bold">Creating a new Expense</h2>
                 <form onSubmit={handleCreate}>
                     <div className="flex flex-col md:flex-row items-center gap-2">
-                        <input type="text" ref={category} placeholder="Category..." required className={`w-full md:w-2/3 border focus:ring-1 ${errors?.category ? 'border-(--danger) focus:ring-(--danger)' : 'border-(--input-border) focus:ring-(--medium)'} rounded-md p-2 outline-none placeholder:text-sm transition-all duration-300`} />
+                        <input type="text" ref={category} placeholder="Category..." required className={`w-full md:w-5/10 border focus:ring-1 ${errors?.category ? 'border-(--danger) focus:ring-(--danger)' : 'border-(--input-border) focus:ring-(--medium)'} rounded-md p-2 outline-none placeholder:text-sm transition-all duration-300`} />
                         {
                             errors?.category && <p className="md:hidden w-full text-(--danger) font-bold text-sm">{errors.category[0]}</p>
                         }
-                        <input type="number" step="0.01" min="5.01" ref={amount} placeholder="Amount..." required className={`w-full md:w-1/3 border focus:ring-1 ${errors?.amount ? 'border-(--danger) focus:ring-(--danger)' : 'border-(--input-border) focus:ring-(--medium)'} rounded-md p-2 outline-none placeholder:text-sm transition-all duration-300`} />
+                        <input type="number" step="0.01" min="5.01" ref={amount} placeholder="Amount ( e.g. 1000.00 )" required className={`w-full md:w-3/10 border focus:ring-1 ${errors?.amount ? 'border-(--danger) focus:ring-(--danger)' : 'border-(--input-border) focus:ring-(--medium)'} rounded-md p-2 outline-none placeholder:text-sm transition-all duration-300`} />
                         {
                             errors?.amount && <p className="md:hidden w-full text-(--danger) font-bold text-sm">{errors.amount[0]}</p>
+                        } 
+                        <input type="text" ref={currency} placeholder="Currency ( MAD , USD...)" required className={`w-full md:w-2/10 border focus:ring-1 ${errors?.currency ? 'border-(--danger) focus:ring-(--danger)' : 'border-(--input-border) focus:ring-(--medium)'} rounded-md p-2 outline-none placeholder:text-sm transition-all duration-300`} />
+                        {
+                            errors?.currency && <p className="md:hidden w-full text-(--danger) font-bold text-sm">{errors.currency[0]}</p>
                         } 
                     </div>
                     {/* This layout is only displayed for medium screens and above */}
                     <div className="hidden md:flex items-center gap-2 my-2">
-                        <p className="w-2/3 text-(--danger) font-bold text-sm">{errors?.category && errors.category[0]}</p>
-                        <p className="w-1/3 text-(--danger) font-bold text-sm">{errors?.amount && errors.amount[0]}</p>
+                        <p className="w-5/10 text-(--danger) font-bold text-sm">{errors?.category && errors.category[0]}</p>
+                        <p className="w-3/10 text-(--danger) font-bold text-sm">{errors?.amount && errors.amount[0]}</p>
+                        <p className="w-2/10 text-(--danger) font-bold text-sm">{errors?.currency && errors.currency[0]}</p>
                     </div>
 
                     <div>
@@ -177,7 +186,8 @@ export default function ExpensesList({group, members, expenses, setExpenses}){
                                 <Checkbox 
                                     id={`member_${member.id}`} 
                                     onCheckedChange={(isChecked) => handleMemberToggle(member.id, isChecked)}
-                                    checked={selectedMemberIds.includes(member.id)}
+                                    checked={selectedMemberIds.includes(member.id) || member.id === user?.id}
+                                    disabled={member.id === user?.id}
                                     className="data-checked:bg-(--light) data-checked:text-(--darkest)" />
                                 <Label htmlFor={`member_${member.id}`}><b>{member.name}</b> <span className="font-light">{member.email}</span></Label>
                             </Field>)
@@ -203,19 +213,24 @@ export default function ExpensesList({group, members, expenses, setExpenses}){
                 <h2 className="my-2 text-md md:text-lg font-bold">Editing an existing Expense</h2>
                 <form onSubmit={handleEdit}>
                     <div className="flex flex-col md:flex-row items-center gap-2">
-                        <input type="text" value={editedExpense.category} onChange={(e) => setEditedExpense({...editedExpense, category : e.target.value})} placeholder="Category..." required className={`w-full md:w-2/3 border focus:ring-1 ${errors?.category ? 'border-(--danger) focus:ring-(--danger)' : 'border-(--input-border) focus:ring-(--medium)'} rounded-md p-2 outline-none placeholder:text-sm transition-all duration-300`} />
+                        <input type="text" value={editedExpense.category} onChange={(e) => setEditedExpense({...editedExpense, category : e.target.value})} placeholder="Category..." required className={`w-full md:w-5/10 border focus:ring-1 ${errors?.category ? 'border-(--danger) focus:ring-(--danger)' : 'border-(--input-border) focus:ring-(--medium)'} rounded-md p-2 outline-none placeholder:text-sm transition-all duration-300`} />
                         {
                             errors?.category && <p className="md:hidden w-full text-(--danger) font-bold text-sm">{errors.category[0]}</p>
                         }
-                        <input type="number" value={editedExpense.amount} onChange={(e) => setEditedExpense({...editedExpense, amount : e.target.value})} step="0.01" min="5.01" placeholder="Amount..." required className={`w-full md:w-1/3 border focus:ring-1 ${errors?.amount ? 'border-(--danger) focus:ring-(--danger)' : 'border-(--input-border) focus:ring-(--medium)'} rounded-md p-2 outline-none placeholder:text-sm transition-all duration-300`} />
+                        <input type="number" value={editedExpense.amount} onChange={(e) => setEditedExpense({...editedExpense, amount : e.target.value})} step="0.01" min="5.01" placeholder="Amount..." required className={`w-full md:w-3/10 border focus:ring-1 ${errors?.amount ? 'border-(--danger) focus:ring-(--danger)' : 'border-(--input-border) focus:ring-(--medium)'} rounded-md p-2 outline-none placeholder:text-sm transition-all duration-300`} />
                         {
                             errors?.amount && <p className="md:hidden w-full text-(--danger) font-bold text-sm">{errors.amount[0]}</p>
+                        } 
+                        <input type="text" value={editedExpense.currency} onChange={(e) => setEditedExpense({...editedExpense, currency : e.target.value})} placeholder="Currency ( MAD , USD...)" required className={`w-full md:w-2/10 border focus:ring-1 ${errors?.currency ? 'border-(--danger) focus:ring-(--danger)' : 'border-(--input-border) focus:ring-(--medium)'} rounded-md p-2 outline-none placeholder:text-sm transition-all duration-300`} />
+                        {
+                            errors?.currency && <p className="md:hidden w-full text-(--danger) font-bold text-sm">{errors.currency[0]}</p>
                         } 
                     </div>
                     {/* This layout is only displayed for medium screens and above */}
                     <div className="hidden md:flex items-center gap-2 my-2">
-                        <p className="w-2/3 text-(--danger) font-bold text-sm">{errors?.category && errors.category[0]}</p>
-                        <p className="w-1/3 text-(--danger) font-bold text-sm">{errors?.amount && errors.amount[0]}</p>
+                        <p className="w-5/10 text-(--danger) font-bold text-sm">{errors?.category && errors.category[0]}</p>
+                        <p className="w-3/10 text-(--danger) font-bold text-sm">{errors?.amount && errors.amount[0]}</p>
+                        <p className="w-2/10 text-(--danger) font-bold text-sm">{errors?.currency && errors.currency[0]}</p>
                     </div>
 
                     <div>
@@ -302,9 +317,10 @@ export default function ExpensesList({group, members, expenses, setExpenses}){
                                 <div className="bg-(--medium) text-(--darkest) p-2 rounded-lg flex items-center gap-2 mt-3">
                                     <Banknote size={20} />
                                     <span className="font-black">{expense.amount}</span>
+                                    <span className="font-black">{expense.currency}</span>
                                 </div>
                             </TooltipTrigger>
-                            <TooltipContent side="left">
+                            <TooltipContent>
                                 <span>Expense Amount</span>
                             </TooltipContent>
                         </Tooltip>

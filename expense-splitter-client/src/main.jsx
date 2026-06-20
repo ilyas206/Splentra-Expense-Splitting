@@ -8,6 +8,7 @@ import Dashboard from './components/pages/dashboard/Dashboard.jsx'
 import GroupDetail from './components/pages/dashboard/GroupDetail.jsx'
 import ExpenseDetail from './components/pages/dashboard/ExpenseDetail.jsx'
 import { TooltipProvider } from './components/ui/tooltip'
+import User from './components/pages/user/User'
 
 const GuestRoute = ({children}) => {
   const { token } = useAuth()
@@ -26,6 +27,7 @@ createRoot(document.getElementById('root')).render(
         <Routes>
           <Route path='/register' element={<GuestRoute><Register/></GuestRoute>}/>
           <Route path='/login' element={<GuestRoute><Login/></GuestRoute>}/>
+          <Route path='/user/:id' element={<ProtectedRoute><User/></ProtectedRoute>}/>
           <Route path='/dashboard' element={<ProtectedRoute><Dashboard/></ProtectedRoute>}/>
           <Route path='/groups/:id' element={<ProtectedRoute><GroupDetail/></ProtectedRoute>}/>
           <Route path='/expenses/:id' element={<ProtectedRoute><ExpenseDetail/></ProtectedRoute>}/>

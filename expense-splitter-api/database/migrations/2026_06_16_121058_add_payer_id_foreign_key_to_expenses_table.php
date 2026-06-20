@@ -11,12 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('groups', function (Blueprint $table) {
-            $table->id();
-            $table->string('title');
-            $table->unsignedBigInteger('created_by');
-            $table->foreign('created_by')->references('id')->on('users')->cascadeOnDelete();
-            $table->timestamps();
+        Schema::table('expenses', function (Blueprint $table) {
+            $table->foreign('payer_id')->after('currency')->references('id')->on('users')->cascadeOnDelete();
         });
     }
 
@@ -25,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('groups');
+        Schema::table('expenses', function (Blueprint $table) {
+            $table->dropColumn('payer_id');
+        });
     }
 };

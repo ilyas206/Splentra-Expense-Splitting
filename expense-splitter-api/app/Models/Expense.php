@@ -10,6 +10,7 @@ class Expense extends Model
         'category',
         'description',
         'amount',
+        'currency',
         'payer_id',
         'group_id',
     ];
