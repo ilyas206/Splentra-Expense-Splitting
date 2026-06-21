@@ -1,6 +1,7 @@
 import { CircleDollarSign, Pen, Plus, Trash, Trash2Icon, X } from "lucide-react";
 import Navbar from "../navbar/Navbar";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { axiosClient } from "../../../api/axios";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/components/context/AuthContext";
@@ -12,8 +13,6 @@ import Hero from "../../../assets/Hero.png"
 import SmallHero from "../../../assets/Small_Hero.png" 
 
 export default function Dashboard(){
-    const [groups, setGroups] = useState([])
-    const [isLoading, setIsLoading] = useState(false)
     const [isActionLoading, setIsActionLoading] = useState(false)
     const [toggleCreateForm, setToggleCreateForm] = useState(false)
     const [editedGroupID, setEditedGroupID] = useState(null)
@@ -22,22 +21,17 @@ export default function Dashboard(){
 
     const createTitle = useRef()
 
+    const queryClient = useQueryClient()
+
     const { user } = useAuth()
 
-    useEffect(() => {
-        const getGroups = async () => {
-            try{
-                setIsLoading(true)
-                const {data} = await axiosClient.get('/api/groups')
-                setGroups(data)
-            }catch(error){
-                console.log(error)
-            }finally{
-                setIsLoading(false)
-            }
+    const { data: groups = [], isLoading } = useQuery({
+        queryKey: ['groups'],
+        queryFn: async () => {
+            const { data } = await axiosClient.get('/api/groups')
+            return data
         }
-        getGroups()
-    }, [])
+    })
 
     const handleCreate = async (e) => {
         try{
@@ -46,7 +40,7 @@ export default function Dashboard(){
             const response = await axiosClient.post('/api/groups', {
                 title : createTitle.current.value
             })
-            setGroups([...groups, response.data.group])
+            queryClient.invalidateQueries({ queryKey: ['groups'] })
             createTitle.current.value = ''
             setError(null)
             toast.success(response.data.message, {
@@ -71,7 +65,7 @@ export default function Dashboard(){
             const response = await axiosClient.put(`/api/groups/${id}`, {
                 title : editedGroupTitle
             })
-            setGroups(groups.map(group => group.id === id ? response.data.group : group))
+            queryClient.invalidateQueries({ queryKey: ['groups'] })
             setEditedGroupTitle(null)
             setEditedGroupID(null)
             setError(null)
@@ -103,7 +97,7 @@ export default function Dashboard(){
         try{
             setIsActionLoading(true)
             const response = await axiosClient.delete(`/api/groups/${id}`)
-            setGroups(groups.filter(group => group.id !== id))
+            queryClient.invalidateQueries({ queryKey: ['groups'] })
             setEditedGroupID(null)
             setEditedGroupTitle(null)
             toast.error(response.data.message, {
@@ -228,7 +222,7 @@ export default function Dashboard(){
                                                     <Tooltip>
                                                         <TooltipTrigger>
                                                             <Link to={`/groups/${group.id}`}>
-                                                                <h1 className="text-2xl font-semibold">{group.title}</h1>
+                                                                <h1 className="text-xl md:text-2xl font-semibold">{group.title}</h1>
                                                             </Link>
                                                         </TooltipTrigger>
                                                         <TooltipContent>
@@ -256,7 +250,7 @@ export default function Dashboard(){
                                                     {
                                                         isCreator ? 
                                                         <>
-                                                            <button disabled={!isCreator} 
+                                                            <button
                                                                 onClick={() => {
                                                                     setEditedGroupTitle(group.title)
                                                                     setEditedGroupID(group.id)

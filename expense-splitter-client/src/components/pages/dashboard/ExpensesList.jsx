@@ -5,18 +5,22 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Field, FieldGroup } from "@/components/ui/field"
 import { Label } from "@/components/ui/label"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { useQueryClient } from "@tanstack/react-query"
 import { Banknote, CircleDollarSign, Pen, Plus, Trash, Trash2Icon, X } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 import { Link } from "react-router-dom"
 import { toast } from "sonner"
 
-export default function ExpensesList({group, members, expenses, setExpenses}){
+export default function ExpensesList({group, members, expenses}){
 
     const [toggleCreateExpenseForm, setToggleCreateExpenseForm] = useState(false)
     const [isActionLoading, setIsActionLoading] = useState(false)
     const [editedExpense, setEditedExpense] = useState(null)
     const [selectedMemberIds, setSelectedMemberIds] = useState([])
     const [errors, setErrors] = useState(null)
+
+    const queryClient = useQueryClient()
+
     const { user } = useAuth()
 
     const category = useRef()
@@ -54,7 +58,7 @@ export default function ExpensesList({group, members, expenses, setExpenses}){
                 currency : currency.current.value,
                 member_ids : selectedMemberIds
             })
-            setExpenses([...expenses, data.expense])
+            queryClient.invalidateQueries({ queryKey: ['group', group.id] })
             category.current.value = ''
             description.current.value = ''
             amount.current.value = ''
@@ -86,7 +90,7 @@ export default function ExpensesList({group, members, expenses, setExpenses}){
                 currency : editedExpense.currency,
                 member_ids : selectedMemberIds
             })
-            setExpenses(expenses.map(expense => expense.id === editedExpense.id ? response.data.expense : expense))
+            queryClient.invalidateQueries({ queryKey: ['group', group.id] })
             setEditedExpense(null)
             setErrors(null)
             toast.success(response.data.message, {
@@ -107,7 +111,7 @@ export default function ExpensesList({group, members, expenses, setExpenses}){
         try{
             setIsActionLoading(true)
             const response = await axiosClient.delete(`/api/expenses/${id}`)
-            setExpenses(expenses.filter(expense => expense.id !== id))
+            queryClient.invalidateQueries({ queryKey: ['group', group.id] })
             setEditedExpense(null)
             toast.error(response.data.message, {
                 style : {
@@ -128,6 +132,14 @@ export default function ExpensesList({group, members, expenses, setExpenses}){
         }finally{
             setIsActionLoading(false)
         }
+    }
+
+    const truncateWords = (text, maxWords) => {
+    const words = text.split(' ');
+
+    return words.length > maxWords
+        ? words.slice(0, maxWords).join(' ') + '...'
+        : text;
     }
 
     return <>
@@ -267,7 +279,7 @@ export default function ExpensesList({group, members, expenses, setExpenses}){
     </>
 
     {
-        expenses.length > 0 ? <div className="grid grid-col-1 md:grid-cols-3 gap-4 mt-7">
+        expenses?.length > 0 ? <div className="grid grid-col-1 md:grid-cols-3 gap-4 mt-7">
             {
                 expenses.map(expense => {
                 const isPayer = user?.id === expense.payer_id
@@ -302,7 +314,7 @@ export default function ExpensesList({group, members, expenses, setExpenses}){
                         <Tooltip>
                             <TooltipTrigger>
                                 <Link to={`/expenses/${expense.id}`}>
-                                    <h1 className="text-xl font-bold">{expense.description}</h1>
+                                    <h1 className="text-xl font-bold">{truncateWords(expense.description, 7)}</h1>
                                 </Link>
                             </TooltipTrigger>
                             <TooltipContent>

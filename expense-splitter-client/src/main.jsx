@@ -1,6 +1,7 @@
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { AuthProvider, useAuth } from './components/context/AuthContext'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import './index.css'
 import Login from './components/pages/auth/Login.jsx'
 import Register from './components/pages/auth/Register.jsx'
@@ -9,6 +10,8 @@ import GroupDetail from './components/pages/dashboard/GroupDetail.jsx'
 import ExpenseDetail from './components/pages/dashboard/ExpenseDetail.jsx'
 import { TooltipProvider } from './components/ui/tooltip'
 import User from './components/pages/user/User'
+
+const queryClient = new QueryClient()
 
 const GuestRoute = ({children}) => {
   const { token } = useAuth()
@@ -21,18 +24,20 @@ const ProtectedRoute = ({children}) => {
 }
 
 createRoot(document.getElementById('root')).render(
-  <BrowserRouter>
-    <TooltipProvider>
-      <AuthProvider>
-        <Routes>
-          <Route path='/register' element={<GuestRoute><Register/></GuestRoute>}/>
-          <Route path='/login' element={<GuestRoute><Login/></GuestRoute>}/>
-          <Route path='/user/:id' element={<ProtectedRoute><User/></ProtectedRoute>}/>
-          <Route path='/dashboard' element={<ProtectedRoute><Dashboard/></ProtectedRoute>}/>
-          <Route path='/groups/:id' element={<ProtectedRoute><GroupDetail/></ProtectedRoute>}/>
-          <Route path='/expenses/:id' element={<ProtectedRoute><ExpenseDetail/></ProtectedRoute>}/>
-        </Routes>
-      </AuthProvider>
-    </TooltipProvider>
-  </BrowserRouter>
+  <QueryClientProvider client={queryClient}>
+    <BrowserRouter>
+      <TooltipProvider>
+        <AuthProvider>
+          <Routes>
+            <Route path='/register' element={<GuestRoute><Register/></GuestRoute>}/>
+            <Route path='/login' element={<GuestRoute><Login/></GuestRoute>}/>
+            <Route path='/user/:id' element={<ProtectedRoute><User/></ProtectedRoute>}/>
+            <Route path='/dashboard' element={<ProtectedRoute><Dashboard/></ProtectedRoute>}/>
+            <Route path='/groups/:id' element={<ProtectedRoute><GroupDetail/></ProtectedRoute>}/>
+            <Route path='/expenses/:id' element={<ProtectedRoute><ExpenseDetail/></ProtectedRoute>}/>
+          </Routes>
+        </AuthProvider>
+      </TooltipProvider>
+    </BrowserRouter>
+  </QueryClientProvider>
 )

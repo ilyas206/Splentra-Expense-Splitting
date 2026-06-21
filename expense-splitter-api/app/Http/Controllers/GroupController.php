@@ -49,7 +49,7 @@ class GroupController extends Controller
 
     public function store(Request $request){
         $formFields = $request->validate([
-            'title' => ['required', 'max:30']
+            'title' => ['required', 'max:15']
         ]); 
 
         $formFields['created_by'] = $request->user()->id;
@@ -77,7 +77,7 @@ class GroupController extends Controller
         }
 
         $formFields = $request->validate([
-            'title' => ['required', 'max:30']
+            'title' => ['required', 'max:15']
         ]); 
 
         $group->update($formFields);

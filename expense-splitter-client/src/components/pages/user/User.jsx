@@ -123,7 +123,7 @@ export default function Dashboard(){
                                 </AlertDialogMedia>
                                 <AlertDialogTitle>Delete your Account ?</AlertDialogTitle>
                                     <AlertDialogDescription className="text-(--light)">
-                                        This will permanently delete your account as well as .
+                                        This will permanently delete your account as well as your expense splits.
                                     </AlertDialogDescription>
                                 </AlertDialogHeader>
                                 <AlertDialogAction 

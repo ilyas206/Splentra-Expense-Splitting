@@ -1,14 +1,18 @@
 import { axiosClient } from "@/api/axios"
 import { useAuth } from "@/components/context/AuthContext"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogMedia, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
+import { useQueryClient } from "@tanstack/react-query"
 import { CircleDollarSign, Plus, Trash2Icon } from "lucide-react"
 import { useRef, useState } from "react"
 import { toast } from "sonner"
 
-export default function MembersList({group, groupCreator, members, setMembers}){
+export default function MembersList({group, groupCreator, members}){
 
     const [toggleAddMemberForm, setToggleAddMemberForm] = useState(false)
     const [isActionLoading, setIsActionLoading] = useState(false)
+
+    const queryClient = useQueryClient()
+
     const { user } = useAuth()
 
     const email = useRef()
@@ -71,7 +75,7 @@ export default function MembersList({group, groupCreator, members, setMembers}){
             const {data} = await axiosClient.post(`/api/groups/${group.id}/members`, {
                 user_id : response.data.id
             })
-            setMembers([...members, data.newMember])
+            queryClient.invalidateQueries({ queryKey: ['group', group.id] })
             setToggleAddMemberForm(false)
             email.current.value = ''
             toast.success(data.message, {
@@ -99,7 +103,7 @@ export default function MembersList({group, groupCreator, members, setMembers}){
         try{
             setIsActionLoading(true)
             const {data} = await axiosClient.delete(`/api/groups/${group.id}/members/${id}`)
-            setMembers(members.filter(member => member.id !== id))
+            queryClient.invalidateQueries({ queryKey: ['group', group.id] })
             setToggleAddMemberForm(false)
             email.current.value = ''
             toast.success(data.message, {

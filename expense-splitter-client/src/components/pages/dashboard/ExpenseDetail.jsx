@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Navbar from "../navbar/Navbar";
 import { CircleDollarSign, CircleQuestionMark, DollarSign, X } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { toast, Toaster } from "sonner";
 import { useAuth } from "@/components/context/AuthContext";
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useParams } from "react-router-dom";
 import { axiosClient } from "@/api/axios";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
@@ -11,61 +12,36 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 
 export default function ExpenseDetail(){
 
-    const [isLoading, setIsLoading] = useState(false)
     const [isActionLoading, setIsActionLoading] = useState(false)
-    const [expense, setExpense] = useState(null)
-    const [expensePayer, setExpensePayer] = useState(null)
-    const [expenseGroup, setExpenseGroup] = useState(null)
-    const [expenseSplits, setExpenseSplits] = useState([])
-    const [memberSplit, setMemberSplit] = useState(null)
-    const [isPayer, setIsPayer] = useState(false)
-    const { user } = useAuth()
 
+    const { user } = useAuth()
+    
     const { id } = useParams()
 
-    useEffect(() => {
-        const getExpense = async () => {
-            try{
-                setIsLoading(true)
-                const {data} = await axiosClient.get(`/api/expenses/${id}`)
-                setExpense(data.expense)
-                setExpensePayer(data.expense.user)
-                setExpenseGroup(data.expense.group)
-                setIsPayer(data.expense.payer_id === user?.id)
-            }catch(error){
-                toast.warning(error.response.data, {
-                    style : {
-                        background : "var(--dark)",
-                        color : "var(--light)",
-                        border : "1px solid var(--input-border)"
-                    }
-                })
-            }finally{
-                setIsLoading(false)
-            }
+    const queryClient = useQueryClient()
+
+    const { data : expenseData, isLoading } = useQuery({
+        queryKey: ['expense', id],
+        queryFn: async () => {
+            const { data } = await axiosClient.get(`/api/expenses/${id}`)
+            return data
         }
-        const getExpenseSplits = async () => {
-            try{
-                setIsLoading(true)
-                const {data} = await axiosClient.get(`/api/expenses/${id}/splits`)
-                setExpenseSplits(data.expenseSplits)
-                const currentUserSplit = data.expenseSplits.find(split => split.user_id === user?.id)
-                setMemberSplit(currentUserSplit)
-            }catch(error){
-                toast.warning(error.response.data, {
-                    style : {
-                        background : "var(--dark)",
-                        color : "var(--light)",
-                        border : "1px solid var(--input-border)"
-                    }
-                })
-            }finally{
-                setIsLoading(false)
-            }
+    })
+
+    const { data : splitsData } = useQuery({
+        queryKey: ['splits', id],
+        queryFn: async () => {
+            const { data } = await axiosClient.get(`/api/expenses/${id}/splits`)
+            return data
         }
-        getExpense()
-        getExpenseSplits()
-    }, [user, id])
+    })
+
+    const expense = expenseData?.expense ?? null
+    const expensePayer = expenseData?.expense?.user ?? null
+    const expenseGroup = expenseData?.expense?.group ?? null
+
+    const expenseSplits = splitsData?.expenseSplits ?? null
+    const memberSplit = splitsData?.expenseSplits?.find(split => split.user_id === user?.id) ?? null
 
     const isPaidClasses = (split) => {
         const isSplitMemberPayer = expense?.payer_id === split.user_id
@@ -103,11 +79,7 @@ export default function ExpenseDetail(){
         try{
                 setIsActionLoading(true)
                 const {data} = await axiosClient.put(`/api/expense_splits/${memberSplit.id}`)
-                const updatedSplit = {...memberSplit, is_paid : true}
-                setMemberSplit(updatedSplit)
-                setExpenseSplits(expenseSplits.map(split => 
-                    split.id === memberSplit.id ? updatedSplit : split
-                ))
+                queryClient.invalidateQueries({ queryKey: ['splits', id] })
                 toast.success(data.message, {
                     style : {
                         background : "var(--dark)",
@@ -165,27 +137,13 @@ export default function ExpenseDetail(){
                                     <p className="text-sm font-light">{expense?.description}</p>
                                     <p className="text-sm font-light">Amount <span className="text-2xl md:text-3xl font-medium">{expense?.amount} {expense?.currency}</span></p>
                                 </div>
-                                <div className="flex flex-col gap-3 md:gap-4">
-                                    <div className="flex text-center flex-1">
+                                <div className="flex flex-col gap-2 md:gap-3 w-full md:w-auto">
+                                    <div className="flex text-center">
                                         <span className="bg-linear-to-r from-(--medium) to-(--dark) text-(--darkest) text-sm md:text-lg p-2 rounded-lg w-full">Paid by <b>{expensePayer?.id === user?.id ? 'Me' : expensePayer?.name}</b></span>
                                     </div>
-                                    <div className="flex items-center gap-2">
-                                        <Tooltip>
-                                            <TooltipTrigger>
-                                                <span className="bg-(--medium) text-(--darkest) text-sm md:text-lg p-2 rounded-lg">Edited <b>{expense?.formatted_updated_at}</b></span>
-                                            </TooltipTrigger>
-                                            <TooltipContent side="bottom">
-                                                <span>Last Expense Edit</span>
-                                            </TooltipContent>
-                                        </Tooltip>
-                                        <Tooltip>
-                                            <TooltipTrigger>
-                                                <span className="bg-(--dark) text-(--light) text-sm md:text-lg p-2 rounded-lg">Created <b>{expense?.formatted_created_at}</b></span>
-                                            </TooltipTrigger>
-                                            <TooltipContent side="bottom">
-                                                <span>Expense Creation</span>
-                                            </TooltipContent>
-                                        </Tooltip>
+                                    <div className="flex flex-col md:flex-row gap-2 text-center">
+                                        <span className="bg-(--medium) text-(--darkest) text-sm md:text-lg p-2 rounded-lg">Edited <b>{expense?.formatted_updated_at}</b></span>
+                                        <span className="bg-(--dark) text-(--light) text-sm md:text-lg p-2 rounded-lg">Created <b>{expense?.formatted_created_at}</b></span>
                                     </div>
                                 </div>
                             </div>
@@ -193,12 +151,12 @@ export default function ExpenseDetail(){
                             <hr className="text-(--input-border) my-7" />
 
                             {
-                                isPayer ? <>
+                                expense?.payer_id === user?.id ? <>
                                     <div className="flex items-center gap-6 md:gap-2 justify-center md:justify-start">
                                         <h1 className="text-md md:text-xl font-bold text-center md:text-left">Splits Status for Members</h1>
                                         <span className="bg-(--medium) text-(--darkest) text-sm md:text-base font-bold py-1 px-2 rounded-lg">{expenseSplits?.length} Splits</span>
                                     </div>
-                                    <div className={`${expenseSplits.length > 2 ? 'grid grid-col-1 mx-auto md:mx-0 md:grid-cols-3' : 'flex flex-col md:flex-row mx-auto md:mx-0 md:items-center md:justify-around'} mt-7`}>
+                                    <div className={`${expenseSplits?.length > 2 ? 'grid grid-col-1 mx-auto md:mx-0 md:grid-cols-3' : 'flex flex-col md:flex-row mx-auto md:mx-0 md:items-center md:justify-around'} mt-7`}>
                                         {
                                             expenseSplits?.map((split, key) => {
                                                 return <div key={key} className="flex items-center gap-3 my-3">
@@ -210,14 +168,17 @@ export default function ExpenseDetail(){
                                                             <span>{isPaidTooltip(split)}</span>
                                                         </TooltipContent>
                                                     </Tooltip>
-                                                    <p><span className="font-bold text-sm md:text-lg">{split.user.name}</span> / <span className="font-light text-sm md:text-lg">{split.user.email}</span></p>
+                                                    <p className="flex flex-col ">
+                                                        <span className="font-bold text-sm md:text-lg">{split.user.name}</span>
+                                                        <span className="font-light text-sm md:text-lg">{split.user.email}</span>
+                                                    </p>
                                                 </div>
                                             })
                                         }
                                     </div>
                                 </> : <>
                                     <h1 className="text-md md:text-xl font-bold text-center md:text-left">Expense Members</h1>
-                                    <div className={`${expenseSplits.length > 2 ? 'grid grid-col-1 mx-auto md:mx-0 md:grid-cols-3' : 'flex flex-col md:flex-row mx-auto md:mx-0 md:items-center md:justify-around'} mt-7`}>
+                                    <div className={`${expenseSplits?.length > 2 ? 'grid grid-col-1 mx-auto md:mx-0 md:grid-cols-3' : 'flex flex-col md:flex-row mx-auto md:mx-0 md:items-center md:justify-around'} mt-7`}>
                                         {
                                             expenseSplits?.map((split, key) => {
                                                 if(split.user_id === user?.id){
@@ -256,7 +217,10 @@ export default function ExpenseDetail(){
                                                                 <span>{split.is_paid ? 'You Already Have Paid Your Split' : 'You Have NOT Paid Your Split Yet , Pay NOW ?'}</span>
                                                             </TooltipContent>
                                                         </Tooltip>
-                                                        <p><span className="font-bold text-sm md:text-lg">{split.user.name}</span> / <span className="font-light text-sm md:text-lg">{split.user.email}</span></p>
+                                                        <p className="flex flex-col ">
+                                                            <span className="font-bold text-sm md:text-lg">{split.user.name}</span>
+                                                            <span className="font-light text-sm md:text-lg">{split.user.email}</span>
+                                                        </p>
                                                     </div>
                                                 }else{
                                                     const isSplitExpensePayer = split.user_id === expense?.payer_id
@@ -269,7 +233,10 @@ export default function ExpenseDetail(){
                                                                 <span>{isSplitExpensePayer ? split.user.name + ' Is The Payer So His Split Is Already Paid' : 'You Cannot See Other Members Payment Status'}</span>
                                                             </TooltipContent>
                                                         </Tooltip>
-                                                        <p><span className="font-bold text-sm md:text-lg">{split.user.name}</span> / <span className="font-light text-sm md:text-lg">{split.user.email}</span></p>
+                                                        <p className="flex flex-col ">
+                                                            <span className="font-bold text-sm md:text-lg">{split.user.name}</span>
+                                                            <span className="font-light text-sm md:text-lg">{split.user.email}</span>
+                                                        </p>
                                                     </div>
                                                 }
                                             })
