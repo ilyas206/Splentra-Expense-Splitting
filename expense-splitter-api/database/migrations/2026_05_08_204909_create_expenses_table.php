@@ -17,6 +17,8 @@ return new class extends Migration
             $table->text('description');
             $table->decimal('amount', 8, 2);
             $table->string('currency');
+            $table->unsignedBigInteger('payer_id');
+            $table->foreign('payer_id')->references('id')->on('users')->cascadeOnDelete();
             $table->foreignId('group_id')->constrained('groups')->cascadeOnDelete();
             $table->timestamps();
         });
