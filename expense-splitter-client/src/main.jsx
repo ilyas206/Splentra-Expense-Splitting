@@ -29,6 +29,7 @@ createRoot(document.getElementById('root')).render(
       <TooltipProvider>
         <AuthProvider>
           <Routes>
+            <Route path='/' element={<Navigate to='/login' />}/>
             <Route path='/register' element={<GuestRoute><Register/></GuestRoute>}/>
             <Route path='/login' element={<GuestRoute><Login/></GuestRoute>}/>
             <Route path='/user/:id' element={<ProtectedRoute><User/></ProtectedRoute>}/>
