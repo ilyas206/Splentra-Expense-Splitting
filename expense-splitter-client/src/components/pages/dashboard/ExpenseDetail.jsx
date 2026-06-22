@@ -5,7 +5,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { toast, Toaster } from "sonner";
 import { useAuth } from "@/components/context/AuthContext";
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { axiosClient } from "@/api/axios";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogMedia, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
@@ -118,11 +118,15 @@ export default function ExpenseDetail(){
                             <Breadcrumb className="mb-6 mx-auto md:mx-0">
                                 <BreadcrumbList className="text-(--light)">
                                     <BreadcrumbItem>
-                                        <BreadcrumbLink className="hover:text-(--medium) text-xs md:text-base" href="/dashboard">Groups</BreadcrumbLink>
+                                        <BreadcrumbLink className="hover:text-(--medium) text-xs md:text-base" asChild>
+                                            <Link to='/dashboard'>Groups</Link>
+                                        </BreadcrumbLink>
                                     </BreadcrumbItem>
                                     <BreadcrumbSeparator />
                                     <BreadcrumbItem>
-                                        <BreadcrumbLink className="hover:text-(--medium) text-xs md:text-base" href={`/groups/${expenseGroup?.id}`}>{expenseGroup?.title} Group</BreadcrumbLink>
+                                        <BreadcrumbLink className="hover:text-(--medium) text-xs md:text-base" asChild>
+                                            <Link to={`/groups/${expenseGroup?.id}`}>{expenseGroup?.title} Group</Link>
+                                        </BreadcrumbLink>
                                     </BreadcrumbItem>
                                     <BreadcrumbSeparator />
                                     <BreadcrumbItem>

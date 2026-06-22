@@ -416,9 +416,9 @@ export default function ExpensesList({group, members, expenses}){
                 </div>
             })
             }
-        </div> : <div className="flex items-center justify-center gap-3 min-h-96">
+        </div> : <div className="flex items-center justify-center gap-3 min-h-96 w-8/10 mx-auto">
             <X size={30} />
-            <h2 className="text-2xl font-bold">No {group?.title} Group Expenses so far</h2>
+            <h2 className="text-md md:text-2xl font-bold">No {group?.title} Group Expenses so far</h2>
         </div>
         
     }
